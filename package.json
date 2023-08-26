@@ -17,7 +17,25 @@
         "command": "casiodev.helloWorld",
         "title": "Hello World"
       }
-    ]
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "casio-dev",
+          "title": "CasioDevTools",
+          "icon": "ressources/view_icon.svg"
+        }
+      ]
+    },
+    "views": {
+			"casio-dev": [
+				{
+					"id": "nodeDependencies",
+					"name": "Node Dependencies",
+					"contextualTitle": "Package Explorer"
+				}
+			]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
