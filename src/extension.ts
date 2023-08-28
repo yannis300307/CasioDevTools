@@ -65,14 +65,12 @@ function ask_password(answer:string | undefined, retry=false) {
 			}
 			var result = await install_giteapc(password);
 			ask_password("yes", true);
-			if (result == "failed") {
-				log_warn('An error ocurred during the installation of GiteaPC. Check VS code logs for more informations.');
+			if (result[0] == "failed") {
+				log_warn('An error ocurred during the installation of GiteaPC : ' + result[1]);
+				if (result[2]) ask_password("yes", true);
 			} else if (result == "success") {
 				vscode.window.showInformationMessage("GiteaPC is now ready to use on your system !");
 				IS_GITEAPC_INSTALLED = true;
-			} else if (result == "bad_password") {
-				log_warn("Can't get superuser privileges. The password is maybe wrong...");
-				ask_password("yes", true);
 			}
 		});
 	}

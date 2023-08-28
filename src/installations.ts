@@ -1,66 +1,67 @@
 import * as cp from 'child_process'
 import { IS_GITEAPC_INSTALLED, IS_WSL_INSTALLED, OS_NAME } from './extension';
 
+const WSL_START_COMMAND = "wsl --shell-type login";
 
-export async function install_giteapc(password: String) {
-    const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
-    console.log("Installing GiteaPC...")
-    if ((OS_NAME == "windows" && IS_WSL_INSTALLED)) {
-        var gitea_installation = cp.exec("wsl --shell-type login sh");
-    } else if (OS_NAME == "linux") {
-        var gitea_installation = cp.exec("sh");
-    } else {
-        return "failed";
-    }
-    gitea_installation.stdout?.on("data", (data) => {
-        console.log(data)
-        if (data.includes("(Y/n)")) {gitea_installation.stdin?.write("\n\r");}
-        if (data.includes("Type \"-\" to skip setting the PATH entirely.")) gitea_installation.stdin?.write("\n\r");
-    });
-    gitea_installation.stderr?.on("data", (data) => {
-        console.log(data)
-    });
-    gitea_installation.stderr?.on("error", (data) => {
-        console.log("error emitted : " + data)
-    });
-    gitea_installation.stdin?.write("cd \n\r");
-    await delay(500)
+export async function install_giteapc(password: string) {
+    console.log("Installing GiteaPC...");
+
+    var output = [];
+
+    output = execute_command("echo Connected to linux/wsl !");
+    if (output[0] == "failed") return output;
+
+    output = execute_command("apt install curl git python3 build-essential cmake pkg-config -y", password);
+    if (output[0] == "failed") return output;
+
+    output = execute_command('mkdir /tmp/CasioDevToolsGiteaPCInstall -p');
+    if (output[0] == "failed") return output;
+
+    output = execute_command('curl "https://gitea.planet-casio.com/Lephenixnoir/GiteaPC/archive/master.tar.gz" -o /tmp/CasioDevToolsGiteaPCInstall/giteapc-master.tar.gz');
+    if (output[0] == "failed") return output;
+
+    output = execute_command('cd /tmp/CasioDevToolsGiteaPCInstall; tar -xzf /tmp/CasioDevToolsGiteaPCInstall/giteapc-master.tar.gz');
+    if (output[0] == "failed") return output;
+
+    output = execute_command('python3 /tmp/CasioDevToolsGiteaPCInstall/giteapc/giteapc.py install Lephenixnoir/GiteaPC -y');
+    if (output[0] == "failed") return output;
+
+    var path_export_string = "export PATH=\\\"$PATH:/home/el/.local/bin\\\""
+    output = execute_command('cd; if ! grep -q "' + path_export_string + '" ".bashrc"; then echo "' + path_export_string + '" >> .bashrc; fi')
+    if (output[0] == "failed") return output;
     
-    gitea_installation.stdin?.write("echo connected to wsl shell \n\r");
-    await delay(500)
-    
-    var enter_password = false;
-    try {
-        gitea_installation.stdin?.write("sudo su \n\r");
-        enter_password = true;
-    } catch (_) { console.log("unable to execute `sudo su`"); }
-    await delay(500);
-    
-    try { 
-        gitea_installation.stdin?.write(password + "\n\r");
-    } catch (_) { return "bad_password"; }
-    
-    gitea_installation.stdin?.write("apt install curl git python3 build-essential cmake pkg-config \n echo first step finished \n");
-    await delay(500);
-    gitea_installation.stdin?.write("curl \"https://gitea.planet-casio.com/Lephenixnoir/GiteaPC/raw/branch/master/install.sh\" -o /tmp/giteapc-install.sh && bash /tmp/giteapc-install.sh && if ! grep -q \"export PATH=\\\"\\$PATH:/home/el/.local/bin\\\"\" \".bashrc\"; then echo \"export PATH=\\\"\\$PATH:/home/el/.local/bin\\\"\" >> .bashrc; fi && echo second step finished && exit\n\r");
-    await delay(500);
+    if (IS_WSL_INSTALLED) cp.execSync("wsl --shutdown");;
 
-    if (IS_WSL_INSTALLED) cp.exec("wsl --shutdown");
-
-    if ((OS_NAME == "windows" && IS_WSL_INSTALLED)) {
-        try {
-            var gitea_check = cp.execSync("wsl --shell-type login giteapc --help");
-        } catch (_) { return "failed"; }
-    } else if (OS_NAME == "linux") {
-        try {
-            var gitea_check = cp.execSync("giteapc --help");
-        } catch (_) { return "failed"; }
-    } else return "failed";
-
-    if (gitea_check.includes("command not found")) {
-        return "failed";
-    }
+    output = execute_command("giteapc --help")
+    if (output[0] == "failed") return output;
         
     return "success";
+}
+
+function execute_command(command: string, root_password = "") {
+    if (root_password) {
+        var command = 'echo ' + root_password + ' | sudo -S ' + command;
+    } else {
+        var command = command;
+    }
+
+    var output = "";
+
+    if ((OS_NAME == "windows" && IS_WSL_INSTALLED)) {
+        try {
+            output = cp.execSync(WSL_START_COMMAND + " " + command).toString();
+        } catch (error) {
+            return ["failed", (error as Error).message, root_password != ""];
+        }
+    } else if (OS_NAME == "linux") {
+        try {
+            output = cp.execSync(command).toString();
+        } catch (error) {
+            return ["failed", (error as Error).message, root_password != ""];
+        }
+    } else {
+        return ["failed", "", root_password != ""];
+    }
+    return ["success", output, root_password != ""]
 }
