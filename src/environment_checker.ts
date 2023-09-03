@@ -1,5 +1,5 @@
-import * as cp from 'child_process'
-import * as os from 'os'
+import * as cp from 'child_process';
+import * as os from 'os';
 import { IS_WSL_INSTALLED, OS_NAME } from './extension';
 
 
@@ -8,11 +8,11 @@ import { IS_WSL_INSTALLED, OS_NAME } from './extension';
  * 
  * @returns the os name
  */
-export function get_os() {
-    var os_type = os.type().toLowerCase();
-    if (os_type.includes("win")) {
+export function getOS() {
+    var osType = os.type().toLowerCase();
+    if (osType.includes("win")) {
         return "windows";
-    } else if (os_type.includes("linux")) {
+    } else if (osType.includes("linux")) {
         return "linux";
     } else {
         return "unknown";
@@ -24,29 +24,29 @@ export function get_os() {
  * 
  * @returns wsl is installed
  */
-export function get_wsl_installed() {
-    var check_message = "wsl is enabled and ready to use in casiodev"
+export function getWslInstalled() {
+    var checkMessage = "wsl is enabled and ready to use in casiodev";
     var found = false;
     try {
-        var wsl_command = cp.execSync("wsl echo " + check_message);
+        var wslCommand = cp.execSync("wsl echo " + checkMessage);
     } catch (_) { return false; }
 
-    console.log(wsl_command.toString('utf8'))
+    console.log(wslCommand.toString('utf8'));
 
-    return wsl_command.toString('utf8').includes(check_message);
+    return wslCommand.toString('utf8').includes(checkMessage);
 }
 
-export function get_giteapc_installed() {
-    if ((OS_NAME == "windows" && IS_WSL_INSTALLED)) {
+export function getGiteapcInstalled() {
+    if ((OS_NAME === "windows" && IS_WSL_INSTALLED)) {
         try {
-            var gitea_version = cp.execSync("wsl --shell-type login giteapc --version");
-        } catch (_) { return false }
-        return gitea_version.toString('utf8').includes("GiteaPC");
-    } else if (OS_NAME == "linux") {
-        try{
-            var gitea_version = cp.execSync("giteapc --version");
-        } catch (_) {return false}
-        return gitea_version.toString('utf8').includes("GiteaPC");
+            var giteaVersion = cp.execSync("wsl --shell-type login giteapc --version");
+        } catch (_) { return false; }
+        return giteaVersion.toString('utf8').includes("GiteaPC");
+    } else if (OS_NAME === "linux") {
+        try {
+            var giteaVersion = cp.execSync("giteapc --version");
+        } catch (_) { return false; }
+        return giteaVersion.toString('utf8').includes("GiteaPC");
     } else {
         return false;
     }

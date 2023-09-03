@@ -1,8 +1,8 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { get_giteapc_installed, get_os, get_wsl_installed } from './environment_checker';
-import { install_giteapc } from './installations';
+import { getGiteapcInstalled, getOS, getWslInstalled } from './environment_checker';
+import { installGiteapc } from './installations';
 import { InputBoxOptions } from 'vscode';
 import { GiteaPCViewProvider } from "./gitepc_webview";
 
@@ -23,8 +23,8 @@ function setupViews(context: vscode.ExtensionContext) {
 	console.log("Views successfully registered !");
 }
 function checkEnvironment() {
-	OS_NAME = get_os();
-	IS_WSL_INSTALLED = get_wsl_installed();
+	OS_NAME = getOS();
+	IS_WSL_INSTALLED = getWslInstalled();
 
 	
 	if (OS_NAME === "unknown") {
@@ -33,7 +33,7 @@ function checkEnvironment() {
 		logWarn('You need a WSL distribution to run fxsdk. Please install wsl to be able to compile.');
 	}
 
-	IS_GITEAPC_INSTALLED = get_giteapc_installed();
+	IS_GITEAPC_INSTALLED = getGiteapcInstalled();
 	
 	console.log("OS name ? " + OS_NAME);
 	console.log("Is wsl installed ? " + IS_WSL_INSTALLED);
@@ -72,7 +72,7 @@ function askPassword(answer:string | undefined, retry=false) {
 			} else {
 				var password = value;
 			}
-			var result = await install_giteapc(password);
+			var result = await installGiteapc(password);
 			askPassword("yes", true);
 			if (result[0] === "failed") {
 				logWarn('An error ocurred during the installation of GiteaPC : ' + result[1]);
