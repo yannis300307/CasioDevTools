@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            .input_label {
+                display: inline;
+                font-weight: bold;;
+                color: rgb(255, 178, 178);
+            }
+            .lib_input {
+                width: 50%;
+            }
+        </style>
+        <script>
+            window.addEventListener('load', function () {
+                const vscode = acquireVsCodeApi();
+
+                console.log("working !");
+                console.log(document.querySelector('.installButton'));
+
+                document.querySelector('.installButton').addEventListener('click', () => {
+                    const lib_name = document.querySelector('.lib_input').value
+                    vscode.postMessage({ type: 'install_button_pressed', value: lib_name });
+                });
+
+                // Handle messages sent from the extension to the webview
+                window.addEventListener('message', event => {
+                const message = event.data; // The json data that the extension sent
+                console.log(message)
+                });
+            })
+
+
+        </script>
+    </head>
+
+    <body>
+        <h2>Install library from GiteaPC :</h2>
+        <p class="input_label">lib name : </p>
+        <input type="text", class="lib_input">
+        <button class="installButton">install</button>
+    </body>
+</html>

@@ -4,17 +4,25 @@ import * as vscode from 'vscode';
 import { get_giteapc_installed, get_os, get_wsl_installed } from './environment_checker';
 import { install_giteapc } from './installations';
 import { InputBoxOptions } from 'vscode';
+import { GiteaPCViewProvider } from "./gitepc_webview";
 
 export var OS_NAME: string;
 export var IS_WSL_INSTALLED: boolean;
 export var IS_GITEAPC_INSTALLED: boolean;
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
+export function activate(context: vscode.ExtensionContext) {
+	setupViews(context);
+	checkEnvironment();
+}
+
+function setupViews(context: vscode.ExtensionContext) {
+	const provider = new GiteaPCViewProvider(context.extensionUri);
+	context.subscriptions.push(
+		vscode.window.registerWebviewViewProvider(GiteaPCViewProvider.viewType, provider));
+	console.log("Views successfully registered !");
+}
+function checkEnvironment() {
 	OS_NAME = get_os();
 	IS_WSL_INSTALLED = get_wsl_installed();
 
@@ -36,6 +44,7 @@ export function activate(context: vscode.ExtensionContext) {
 			.showInformationMessage("GiteaPC is not installed on your system. Do you want to install it automaticaly?", "Yes", "No")
 			.then(answer => { askPassword(answer); });
 	}
+	console.log("CasioDevTools successfully started !");
 }
 
 // This method is called when your extension is deactivated
