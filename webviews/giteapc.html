@@ -5,11 +5,25 @@
             .input_label {
                 display: inline;
                 font-weight: bold;;
-                color: rgb(255, 178, 178);
             }
+            
+
             .lib_input {
-                width: 50%;
+	            background-color: var(--vscode-input-background);
+                border-radius: 0.1em;
+	            width: 100%;
+	            height: 1.5em;
+                display: flex;
+	            margin-bottom: 0.4em;
+                color:white;
+                border: 1pt solid var(--vscode-input-border);
             }
+
+            .lib_input:focus {
+                outline: solid 1pt var(--vscode-inputOption-activeBorder);
+                border-radius: 0.1em;
+            }
+
             .found_lib_list {
                 padding-top: 10pt;
                 padding-bottom: 10pt;
@@ -17,14 +31,14 @@
                 height: 150pt;
                 padding: 10pt;
                 outline: 1pt solid rgb(0, 174, 255);
-                border-radius: 3%;
+                border-radius: 4pt;
                 margin-top: 10pt;
                 margin-bottom: 10pt;
             }
 
             .list_element {
                 list-style-type: none;
-                margin: 25px 0 0 0;
+                margin: 20px 0 0 0;
                 padding: 0;
                 margin-top: 0pt;
             }
@@ -47,19 +61,37 @@
             .list_element label {
                 padding: 5px;
                 border: 1px solid #CCC;
-                border-radius: 5pt;
+                border-radius: 2pt;
                 cursor: pointer;
                 z-index: 90;
                 color: white;
             }
 
             .list_element label:hover {
-                background: lightskyblue;
+                background: rgb(90, 136, 165);
             }
             
             .list_element input[type="radio"]:checked+label,
             .Checked+label {
-            background: rgb(0, 174, 255);
+            background: rgb(0, 146, 214);
+            }
+
+            button {
+                display: block;
+                border: none;
+                margin: 0 auto;
+                height: 2em;
+                width: 30%;
+                background: var(--vscode-button-background);
+                color: white;
+                border-radius: 0.2em;
+                outline-color: var(--vscode-button-border);
+            }
+            button:hover {
+                background: var(--vscode-button-hoverBackground);
+            }
+            button:active {
+                outline: double var(--vscode-button-hoverBackground);
             }
 
         </style>
@@ -104,7 +136,7 @@
             })
 
             function update_lib_list(new_values) {
-                console.log(new_values)
+                document.querySelector(".found_lib_list").innerHTML = "";
                 for (let i = 0; i < new_values.length; i++) {
                     value = new_values[i];
                     document.querySelector(".found_lib_list").innerHTML+='<li class="list_element"><input type="radio" value=' + value + ' name="lib_list" id="lib_name_' + i + '"><label for="lib_name_' + i + '" name="lib_list" class="btn btn-default">' + value + '</label></li>';
@@ -118,8 +150,7 @@
 
     <body>
         <h2>Install library from GiteaPC :</h2>
-        <p class="input_label">lib name : </p>
-        <input type="text", class="lib_input">
+        <input type="text" class="lib_input" placeholder="libray name">
         <button class = "search_button">search</button>
         <div class="found_lib_list">
         </div>
