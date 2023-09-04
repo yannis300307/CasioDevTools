@@ -71,8 +71,17 @@
                 console.log(document.querySelector('.installButton'));
 
                 document.querySelector('.installButton').addEventListener('click', () => {
-                    const lib_name = document.querySelector('.lib_input').value
-                    vscode.postMessage({ type: 'install_button_pressed', value: lib_name });
+                    var lib_name = "";
+                    var lib_names = document.getElementsByClassName("list_element");
+                    for (i = 0; i < lib_names.length; i++) {
+                        var name_radio = lib_names[i].getElementsByTagName("input")[0];
+                        if (name_radio.checked) {
+                            lib_name = name_radio.value;
+                            break;
+                        }
+                    }
+                    console.log("Selected lib : " + lib_name);
+                    if (lib_name !== "") vscode.postMessage({ type: 'install_button_pressed', value: lib_name });
                 });
 
                 document.querySelector('.search_button').addEventListener('click', () => {

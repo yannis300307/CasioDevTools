@@ -2,9 +2,10 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { getGiteapcInstalled, getOS, getWslInstalled } from './environment_checker';
-import { giteapcGetLibsList, installGiteapc } from './installations';
+import { installGiteapc } from './installations';
 import { InputBoxOptions } from 'vscode';
 import { GiteaPCViewProvider } from "./gitepc_webview";
+import { logWarn } from './utils';
 
 export var OS_NAME: string;
 export var IS_WSL_INSTALLED: boolean;
@@ -49,11 +50,6 @@ function checkEnvironment() {
 
 // This method is called when your extension is deactivated
 export function deactivate() {}
-
-function logWarn(text: string) {
-	vscode.window.showWarningMessage(text);
-		console.log(text);
-}
 
 function askPassword(answer:string | undefined, retry=false) {
 	if (answer === "Yes") {

@@ -1,6 +1,7 @@
 import { open, read, readFileSync } from 'fs';
 import * as vscode from 'vscode';
 import { giteapcGetLibsList, giteapcInstallLib } from './installations';
+import { logMessage, logWarn } from './utils';
 
 export class GiteaPCViewProvider implements vscode.WebviewViewProvider {
     public static readonly viewType = 'casiodev.giteapc';
@@ -33,8 +34,13 @@ export class GiteaPCViewProvider implements vscode.WebviewViewProvider {
 			switch (data.type) {
 				case 'install_button_pressed':
 					{
-						console.log("Trying to install " + data.value + " ...");
-						giteapcInstallLib(data.value);
+						logMessage("Installing " + data.value + " ...");
+						var result = await giteapcInstallLib(data.value);
+						if (result[0] === "failed") {
+							logWarn('An error ocurred during the installation of "' + data.value +'" : ' + result[1]);
+						} else if (result[0] === "success") {
+							logMessage('"' + data.value + '" has been installed !');
+						}
 						break;
 					}
 				case 'search_lib':
