@@ -14,10 +14,28 @@
   "contributes": {
     "commands": [
       {
-        "command": "casiodev.helloWorld",
-        "title": "Hello World"
+        "command": "casiodev.startemulator",
+        "title": "Start Emulator"
       }
-    ]
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "casio-dev",
+          "title": "CasioDevTools",
+          "icon": "ressources/view_icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "casio-dev": [
+        {
+          "type": "webview",
+          "id": "casiodev.giteapc",
+          "name": "GiteaPC"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
@@ -28,15 +46,15 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
-    "@types/vscode": "^1.81.0",
     "@types/mocha": "^10.0.1",
-    "@types/node": "16.x",
+    "@types/node": "^16.18.46",
+    "@types/vscode": "^1.81.0",
     "@typescript-eslint/eslint-plugin": "^6.4.1",
     "@typescript-eslint/parser": "^6.4.1",
+    "@vscode/test-electron": "^2.3.4",
     "eslint": "^8.47.0",
     "glob": "^10.3.3",
     "mocha": "^10.2.0",
-    "typescript": "^5.1.6",
-    "@vscode/test-electron": "^2.3.4"
+    "typescript": "^5.1.6"
   }
 }
