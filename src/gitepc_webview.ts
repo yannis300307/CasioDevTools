@@ -1,4 +1,4 @@
-import { open, read, readFileSync } from 'fs';
+import { readFileSync } from 'fs';
 import * as vscode from 'vscode';
 import { giteapcGetLibsList, giteapcInstallLib } from './installations';
 import { logMessage, logWarn } from './utils';
@@ -28,7 +28,7 @@ export class GiteaPCViewProvider implements vscode.WebviewViewProvider {
 			]
 		};
 
-		webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
+		webviewView.webview.html = this._getHtmlForWebview();
 
 		webviewView.webview.onDidReceiveMessage(async data => {
 			switch (data.type) {
@@ -55,7 +55,7 @@ export class GiteaPCViewProvider implements vscode.WebviewViewProvider {
 		});
 		
     }
-    private _getHtmlForWebview(webview: vscode.Webview) {
+    private _getHtmlForWebview() {
 		var defaultHtml;
 		try {
 			defaultHtml = readFileSync(vscode.Uri.joinPath(this._extensionUri, "webviews", "giteapc.html").fsPath, 'utf8');

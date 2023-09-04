@@ -1,7 +1,6 @@
 import * as cp from 'child_process';
 import { IS_GITEAPC_INSTALLED, IS_WSL_INSTALLED, OS_NAME } from './extension';
 import { getSync } from './request_utils';
-import { Worker } from 'worker_threads';
 
 const WSL_START_COMMAND = "wsl --shell-type login";
 
@@ -45,7 +44,7 @@ export async function giteapcInstallLib(libName:string) {
     if (IS_GITEAPC_INSTALLED) {
         var output = await executeCommandAsync("giteapc install "+libName + " -y");
         return output;
-    } return ["failed", "", false]
+    } return ["failed", "", false];
 }
 
 export async function executeCommandAsync(command:string) {
