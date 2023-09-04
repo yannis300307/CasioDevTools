@@ -2,7 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { getGiteapcInstalled, getOS, getWslInstalled } from './environment_checker';
-import { installGiteapc } from './installations';
+import { giteapcGetLibsList, installGiteapc } from './installations';
 import { InputBoxOptions } from 'vscode';
 import { GiteaPCViewProvider } from "./gitepc_webview";
 

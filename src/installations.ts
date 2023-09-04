@@ -1,5 +1,6 @@
 import * as cp from 'child_process';
-import { IS_WSL_INSTALLED, OS_NAME } from './extension';
+import { IS_GITEAPC_INSTALLED, IS_WSL_INSTALLED, OS_NAME } from './extension';
+import { getSync } from './request_utils';
 
 const WSL_START_COMMAND = "wsl --shell-type login";
 
@@ -37,6 +38,30 @@ export async function installGiteapc(password: string) {
     if (output[0] === "failed") {return output;}
         
     return "success";
+}
+
+export function giteapcInstallLib(libName:string) {
+    if (IS_GITEAPC_INSTALLED) {
+        
+    }
+}
+
+export async function giteapcGetLibsList(libName:string) {
+    if (IS_GITEAPC_INSTALLED) {
+        var response = await getSync("https://gitea.planet-casio.com/api/v1/repos/search?q=giteapc&topic=true");
+        
+        if (typeof response !== "string") {
+            return [];
+        }
+        var libsInfo = JSON.parse(response);
+        var matchingLib: string[] = [];
+        libsInfo["data"].forEach((lib: any) => {
+            if ((lib["full_name"] as string).toLowerCase().includes(libName.toLowerCase())) {
+                matchingLib.push(lib["full_name"]);
+            }
+        });
+        return matchingLib;
+    }
 }
 
 function executeCommand(command: string, rootPassword = "") {

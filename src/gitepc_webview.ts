@@ -1,5 +1,6 @@
 import { open, read, readFileSync } from 'fs';
 import * as vscode from 'vscode';
+import { giteapcGetLibsList, giteapcInstallLib } from './installations';
 
 export class GiteaPCViewProvider implements vscode.WebviewViewProvider {
     public static readonly viewType = 'casiodev.giteapc';
@@ -28,15 +29,25 @@ export class GiteaPCViewProvider implements vscode.WebviewViewProvider {
 
 		webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
-		webviewView.webview.onDidReceiveMessage(data => {
+		webviewView.webview.onDidReceiveMessage(async data => {
 			switch (data.type) {
 				case 'install_button_pressed':
 					{
-						console.log("received message !" + data.value);
+						console.log("Trying to install " + data.value + " ...");
+						giteapcInstallLib(data.value);
+						break;
+					}
+				case 'search_lib':
+					{
+						console.log("Searching for " + data.value + " ...");
+						var newValues = await giteapcGetLibsList(data.value);
+						console.log(newValues);
+						this._view?.webview.postMessage({ type: 'update_lib_list', data: newValues});
 						break;
 					}
 			}
 		});
+		
     }
     private _getHtmlForWebview(webview: vscode.Webview) {
 		var defaultHtml;
@@ -46,8 +57,6 @@ export class GiteaPCViewProvider implements vscode.WebviewViewProvider {
 			console.log(error);
 			defaultHtml = `<html><p>An error occured during the loading of the webview. Please reinstall CasioDevTools.</p></html>`;
 		}
-
-		console.log(defaultHtml);
 
         return defaultHtml;
     }

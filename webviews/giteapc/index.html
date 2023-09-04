@@ -10,6 +10,58 @@
             .lib_input {
                 width: 50%;
             }
+            .found_lib_list {
+                padding-top: 10pt;
+                padding-bottom: 10pt;
+                overflow-y: scroll;
+                height: 150pt;
+                padding: 10pt;
+                outline: 1pt solid rgb(0, 174, 255);
+                border-radius: 3%;
+                margin-top: 10pt;
+                margin-bottom: 10pt;
+            }
+
+            .list_element {
+                list-style-type: none;
+                margin: 25px 0 0 0;
+                padding: 0;
+                margin-top: 0pt;
+            }
+
+            .list_element input[type="radio"] {
+                opacity: 0;
+                width: 0pt;
+                height: 0pt;
+            }
+
+            .list_element label,
+            .list_element input {
+                display: block;
+                position: initial;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+            }
+            .list_element label {
+                padding: 5px;
+                border: 1px solid #CCC;
+                border-radius: 5pt;
+                cursor: pointer;
+                z-index: 90;
+                color: white;
+            }
+
+            .list_element label:hover {
+                background: lightskyblue;
+            }
+            
+            .list_element input[type="radio"]:checked+label,
+            .Checked+label {
+            background: rgb(0, 174, 255);
+            }
+
         </style>
         <script>
             window.addEventListener('load', function () {
@@ -23,12 +75,33 @@
                     vscode.postMessage({ type: 'install_button_pressed', value: lib_name });
                 });
 
+                document.querySelector('.search_button').addEventListener('click', () => {
+                    const lib_name = document.querySelector('.lib_input').value
+                    vscode.postMessage({ type: 'search_lib', value: lib_name });
+                });
+
                 // Handle messages sent from the extension to the webview
                 window.addEventListener('message', event => {
                 const message = event.data; // The json data that the extension sent
-                console.log(message)
+                switch (message.type) {
+                    case 'update_lib_list':
+                        {
+                            console.log(message);
+                            update_lib_list(message.data);
+                            break;
+                        }
+                    }
                 });
             })
+
+            function update_lib_list(new_values) {
+                console.log(new_values)
+                for (let i = 0; i < new_values.length; i++) {
+                    value = new_values[i];
+                    document.querySelector(".found_lib_list").innerHTML+='<li class="list_element"><input type="radio" value=' + value + ' name="lib_list" id="lib_name_' + i + '"><label for="lib_name_' + i + '" name="lib_list" class="btn btn-default">' + value + '</label></li>';
+                    console.log("Added " + value + " to list.");
+                }
+            }
 
 
         </script>
@@ -38,6 +111,9 @@
         <h2>Install library from GiteaPC :</h2>
         <p class="input_label">lib name : </p>
         <input type="text", class="lib_input">
+        <button class = "search_button">search</button>
+        <div class="found_lib_list">
+        </div>
         <button class="installButton">install</button>
     </body>
 </html>
