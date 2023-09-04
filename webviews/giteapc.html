@@ -172,7 +172,11 @@
                 document.querySelector(".found_lib_list").innerHTML = "";
                 for (let i = 0; i < new_values.length; i++) {
                     value = new_values[i];
-                    document.querySelector(".found_lib_list").innerHTML+='<li class="list_element"><input type="radio" value=' + value + ' name="lib_list" id="lib_name_' + i + '"><label for="lib_name_' + i + '" name="lib_list" class="btn btn-default">' + value + '</label></li>';
+                    document.querySelector(".found_lib_list").innerHTML+=
+                    `<li class="list_element">
+                        <input type="radio" value=${value} name="lib_list" id="lib_name_${i}">
+                        <label for="lib_name_${i}" name="lib_list" class="btn btn-default">${value}</label>
+                    </li>`;
                     console.log("Added " + value + " to list.");
                 }
             }
