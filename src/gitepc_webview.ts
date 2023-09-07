@@ -40,8 +40,7 @@ export class GiteaPCViewProvider implements vscode.WebviewViewProvider {
 							logWarn('An error ocurred during the installation of "' + data.value + '" : ' + result[1]);
 						} else if (result[0] === "success") {
 							logMessage('"' + data.value + '" has been installed !');
-							var newValues = await giteapcGetLibsList(data.value);
-							this._view?.webview.postMessage({ type: 'update_lib_list', data: newValues });
+							this.updateLibsList(data.search_bar_value);
 						}
 						break;
 					}
@@ -53,22 +52,25 @@ export class GiteaPCViewProvider implements vscode.WebviewViewProvider {
 							logWarn('An error ocurred during the uninstallation of "' + data.value + '" : ' + result[1]);
 						} else if (result[0] === "success") {
 							logMessage('"' + data.value + '" has been uninstalled !');
-							var newValues = await giteapcGetLibsList(data.value);
-							this._view?.webview.postMessage({ type: 'update_lib_list', data: newValues });
+							this.updateLibsList(data.search_bar_value);
 						}
 						break;
 					}
 				case 'search_lib':
 					{
 						console.log("Searching for " + data.value + " ...");
-						var newValues = await giteapcGetLibsList(data.value);
-						this._view?.webview.postMessage({ type: 'update_lib_list', data: newValues });
+						this.updateLibsList(data.value);
 						break;
 					}
 			}
 		});
 
 	}
+	private async updateLibsList(libName: string) {
+		var newValues = await giteapcGetLibsList(libName);
+		this._view?.webview.postMessage({ type: 'update_lib_list', data: newValues });
+	}
+
 	private _getHtmlForWebview() {
 		var defaultHtml;
 		try {
