@@ -112,8 +112,8 @@
             float: left;
         }
 
-        .uninstallButton:hover {
-            background-color: rgb(175, 0, 0);
+        .uninstallButton:hover:enabled {
+            background: rgb(175, 0, 0);
             outline-color: rgb(175, 0, 0);
         }
 
@@ -151,6 +151,12 @@
         .list_element_name {
             float: left;
         }
+
+        .action_buttons:disabled,
+        button[disabled] {
+            background: grey;
+            outline : grey;
+        }
     </style>
     <script>
         var installed_libs = [];
@@ -162,12 +168,12 @@
 
             document.querySelector('.installButton').addEventListener('click', () => {
                 var lib_name = getSelectedLibName();
-                if (lib_name !== "") vscode.postMessage({ type: 'install_button_pressed', value: lib_name});
+                if (lib_name !== "") vscode.postMessage({ type: 'install_button_pressed', value: lib_name, search_bar_value: document.querySelector('.lib_input').value });
             });
 
             document.querySelector('.uninstallButton').addEventListener('click', () => {
                 var lib_name = getSelectedLibName();
-                if (lib_name !== "") vscode.postMessage({ type: 'uninstall_button_pressed', value: lib_name});
+                if (lib_name !== "") vscode.postMessage({ type: 'uninstall_button_pressed', value: lib_name, search_bar_value: document.querySelector('.lib_input').value });
             });
 
             document.querySelector('.search_button').addEventListener('click', () => {
@@ -203,13 +209,13 @@
         }
 
         function updateActions() {
-            const lib_name = document.querySelector('.lib_input').value;
+            const lib_name = getSelectedLibName();
             if (installed_libs.includes(lib_name)) {
-                document.getElementsByClassName("uninstallButton")[0].disabled = true;
-                document.getElementsByClassName("installButton")[0].disabled = false;
-            } else {
                 document.getElementsByClassName("uninstallButton")[0].disabled = false;
                 document.getElementsByClassName("installButton")[0].disabled = true;
+            } else {
+                document.getElementsByClassName("uninstallButton")[0].disabled = true;
+                document.getElementsByClassName("installButton")[0].disabled = false;
             }
             console.log("updated actions");
         }
