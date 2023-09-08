@@ -1,159 +1,288 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <style>
-            .input_label {
-                display: inline;
-                font-weight: bold;;
-            }
-            
 
-            .lib_input {
-	            background-color: var(--vscode-input-background);
-                border-radius: 0.1em;
-	            width: 100%;
-	            height: 1.5em;
-                display: flex;
-	            margin-bottom: 0.4em;
-                color:white;
-                border: 1pt solid var(--vscode-input-border);
-            }
+<head>
+    <style>
+        .title {
+            text-align: center;
+        }
 
-            .lib_input:focus {
-                outline: solid 1pt var(--vscode-inputOption-activeBorder);
-                border-radius: 0.1em;
-            }
+        .lib_input {
+            background-color: var(--vscode-input-background);
+            border-radius: 0.1em;
+            width: 100%;
+            height: 1.5em;
+            display: flex;
+            margin-bottom: 0.4em;
+            color: white;
+            border: 1pt solid var(--vscode-input-border);
+        }
 
-            .found_lib_list {
-                padding-top: 10pt;
-                padding-bottom: 10pt;
-                overflow-y: scroll;
-                height: 150pt;
-                padding: 10pt;
-                outline: 1pt solid rgb(0, 174, 255);
-                border-radius: 4pt;
-                margin-top: 10pt;
-                margin-bottom: 10pt;
-            }
+        .lib_input:focus {
+            outline: solid 1pt var(--vscode-inputOption-activeBorder);
+            border-radius: 0.1em;
+        }
 
-            .list_element {
-                list-style-type: none;
-                margin: 20px 0 0 0;
-                padding: 0;
-                margin-top: 0pt;
-            }
+        .found_lib_list {
+            padding-top: 10pt;
+            padding-bottom: 10pt;
+            overflow-y: scroll;
+            height: 150pt;
+            padding: 10pt;
+            outline: 1pt solid rgb(0, 174, 255);
+            border-radius: 4pt;
+            margin-top: 10pt;
+            margin-bottom: 10pt;
+        }
 
-            .list_element input[type="radio"] {
-                opacity: 0;
-                width: 0pt;
-                height: 0pt;
-            }
+        .list_element {
+            list-style-type: none;
+            margin: 20px 0 0 0;
+            padding: 0;
+            margin-top: 0pt;
+        }
 
-            .list_element label,
-            .list_element input {
-                display: block;
-                position: initial;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-            }
-            .list_element label {
-                padding: 5px;
-                border: 1px solid #CCC;
-                border-radius: 2pt;
-                cursor: pointer;
-                z-index: 90;
-                color: white;
-            }
+        .list_element input[type="radio"] {
+            opacity: 0;
+            width: 0pt;
+            height: 0pt;
+        }
 
-            .list_element label:hover {
-                background: rgb(90, 136, 165);
-            }
-            
-            .list_element input[type="radio"]:checked+label,
-            .Checked+label {
+        .list_element label,
+        .list_element input {
+            display: block;
+            position: initial;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        .list_element label {
+            padding: 5px;
+            border: 1px solid #CCC;
+            border-radius: 2pt;
+            cursor: pointer;
+            z-index: 90;
+            color: white;
+        }
+
+        .list_element label:hover {
+            background: rgb(90, 136, 165);
+        }
+
+        .list_element input[type="radio"]:checked+label,
+        .Checked+label {
             background: rgb(0, 146, 214);
-            }
+        }
 
-            button {
-                display: block;
-                border: none;
-                margin: 0 auto;
-                height: 2em;
-                width: 30%;
-                background: var(--vscode-button-background);
-                color: white;
-                border-radius: 0.2em;
-                outline-color: var(--vscode-button-border);
-            }
-            button:hover {
-                background: var(--vscode-button-hoverBackground);
-            }
-            button:active {
-                outline: double var(--vscode-button-hoverBackground);
-            }
+        button {
+            border: none;
+            margin: 0 auto;
+            height: 2em;
+            width: 30%;
+            background: var(--vscode-button-background);
+            color: white;
+            border-radius: 0.2em;
+            outline-color: var(--vscode-button-border);
+        }
 
-        </style>
-        <script>
-            window.addEventListener('load', function () {
-                const vscode = acquireVsCodeApi();
+        button:hover {
+            background: var(--vscode-button-hoverBackground);
+        }
 
-                console.log("working !");
-                console.log(document.querySelector('.installButton'));
+        button:active {
+            outline: double var(--vscode-button-hoverBackground);
+        }
 
-                document.querySelector('.installButton').addEventListener('click', () => {
-                    var lib_name = "";
-                    var lib_names = document.getElementsByClassName("list_element");
-                    for (i = 0; i < lib_names.length; i++) {
-                        var name_radio = lib_names[i].getElementsByTagName("input")[0];
-                        if (name_radio.checked) {
-                            lib_name = name_radio.value;
-                            break;
-                        }
-                    }
-                    console.log("Selected lib : " + lib_name);
-                    if (lib_name !== "") vscode.postMessage({ type: 'install_button_pressed', value: lib_name });
-                });
+        .action_buttons {
+            display: block;
+        }
 
-                document.querySelector('.search_button').addEventListener('click', () => {
-                    const lib_name = document.querySelector('.lib_input').value
-                    vscode.postMessage({ type: 'search_lib', value: lib_name });
-                });
+        .action_buttons button {
+            min-width: 7em;
+        }
 
-                // Handle messages sent from the extension to the webview
-                window.addEventListener('message', event => {
+        .uninstallButton {
+            background: red;
+            float: right;
+        }
+
+        .install_button {
+            float: left;
+        }
+
+        .uninstallButton:hover:enabled {
+            background: rgb(175, 0, 0);
+            outline-color: rgb(175, 0, 0);
+        }
+
+        .search_div {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .search_button {
+            margin-left: 10px;
+            width: 10%;
+            min-width: 40pt;
+        }
+
+        .search_button svg {
+            max-height: 1.5em;
+            display: block;
+            margin: auto
+        }
+
+        .list_element_label_div p {
+            display: block;
+            height: 1.5em;
+            margin: 0pt;
+        }
+
+        .list_element_label_div {
+            height: 1.5em;
+        }
+
+        .installation_state {
+            float: right;
+        }
+
+        .list_element_name {
+            float: left;
+        }
+
+        .action_buttons:disabled,
+        button[disabled] {
+            background: grey;
+            outline : grey;
+        }
+    </style>
+    <script>
+        var installed_libs = [];
+
+        window.addEventListener('load', function () {
+            const vscode = acquireVsCodeApi();
+
+            console.log("working !");
+
+            document.querySelector('.installButton').addEventListener('click', () => {
+                var lib_name = getSelectedLibName();
+                if (lib_name !== "") vscode.postMessage({ type: 'install_button_pressed', value: lib_name, search_bar_value: document.querySelector('.lib_input').value });
+            });
+
+            document.querySelector('.uninstallButton').addEventListener('click', () => {
+                var lib_name = getSelectedLibName();
+                if (lib_name !== "") vscode.postMessage({ type: 'uninstall_button_pressed', value: lib_name, search_bar_value: document.querySelector('.lib_input').value });
+            });
+
+            document.querySelector('.search_button').addEventListener('click', () => {
+                const lib_name = document.querySelector('.lib_input').value;
+                vscode.postMessage({ type: 'search_lib', value: lib_name });
+            });
+
+            // Handle messages sent from the extension to the webview
+            window.addEventListener('message', event => {
                 const message = event.data; // The json data that the extension sent
                 switch (message.type) {
                     case 'update_lib_list':
                         {
-                            console.log(message);
                             update_lib_list(message.data);
                             break;
                         }
-                    }
-                });
-            })
+                }
+            });
+        });
 
-            function update_lib_list(new_values) {
-                document.querySelector(".found_lib_list").innerHTML = "";
-                for (let i = 0; i < new_values.length; i++) {
-                    value = new_values[i];
-                    document.querySelector(".found_lib_list").innerHTML+='<li class="list_element"><input type="radio" value=' + value + ' name="lib_list" id="lib_name_' + i + '"><label for="lib_name_' + i + '" name="lib_list" class="btn btn-default">' + value + '</label></li>';
-                    console.log("Added " + value + " to list.");
+        function getSelectedLibName() {
+            var lib_name = "";
+            var lib_names = document.getElementsByClassName("list_element");
+            for (i = 0; i < lib_names.length; i++) {
+                var name_radio = lib_names[i].getElementsByTagName("input")[0];
+                if (name_radio.checked) {
+                    lib_name = name_radio.value;
+                    break;
                 }
             }
+            console.log("Selected lib : " + lib_name);
+            return lib_name;
+        }
+
+        function updateActions() {
+            const lib_name = getSelectedLibName();
+            if (installed_libs.includes(lib_name)) {
+                document.getElementsByClassName("uninstallButton")[0].disabled = false;
+                document.getElementsByClassName("installButton")[0].disabled = true;
+            } else {
+                document.getElementsByClassName("uninstallButton")[0].disabled = true;
+                document.getElementsByClassName("installButton")[0].disabled = false;
+            }
+            console.log("updated actions");
+        }
+
+        function update_lib_list(new_values) {
+            var old_inputs = document.querySelectorAll(".list_element");
+            old_inputs.forEach(element => {
+                element.remove();
+            });
+
+            installed_libs = [];
+
+            for (let i = 0; i < new_values.length; i++) {
+                var value = new_values[i]["name"];
+                if (new_values[i]["installed"]) {
+                    var installation_statut = "Installed";
+                    installed_libs.push(value);
+                } else {
+                    var installation_statut = "";
+                }
+
+                document.querySelector(".found_lib_list").innerHTML +=
+                    `<li class="list_element">
+                        <input type="radio" value=${value} name="lib_list" id="lib_name_${i}" class="list_element_input">
+                        <label for="lib_name_${i}" name="lib_list" class="btn btn-default"><div class="list_element_label_div"><p class="list_element_name">${value}</p><p class="installation_state">${installation_statut}</p></div></label>
+                    </li>`;
+
+                console.log("Added " + value + " to list.");
+            }
+
+            console.log("registering inputs events");
+            document.querySelectorAll(".list_element_input").forEach((element) => {
+                console.log("registered event listener");
+                element.addEventListener('change', function () {
+                    updateActions();
+                });
+            });
+        }
 
 
-        </script>
-    </head>
+    </script>
+</head>
 
-    <body>
-        <h2>Install library from GiteaPC :</h2>
-        <input type="text" class="lib_input" placeholder="libray name">
-        <button class = "search_button">search</button>
-        <div class="found_lib_list">
-        </div>
-        <button class="installButton">install</button>
-    </body>
+<body>
+    <h2 class="title">GiteaPC Libraries</h2>
+    <div class="search_div">
+        <input type="text" class="lib_input" placeholder="Library name...">
+        <button class="search_button"><svg width="10mm" height="10mm" viewBox="0 0 10 10" version="1.1" id="svg1"
+                xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+                <defs id="defs1" />
+                <g id="layer1">
+                    <circle
+                        style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.8;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+                        id="path2" cx="3.8773506" cy="3.5922034" r="2.2521906" />
+                    <rect
+                        style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.8;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+                        id="rect2" width="1.5983288" height="4.6658282" x="-0.29680681" y="7.1499891" rx="0.80000001"
+                        transform="rotate(-43.115324)" />
+                </g>
+            </svg></button>
+    </div>
+    <div class="found_lib_list">
+    </div>
+    <div class="action_buttons">
+        <button class="installButton" disabled>Install Lib</button>
+        <button class="uninstallButton" disabled>Uninstall Lib</button>
+    </div>
+</body>
+
 </html>

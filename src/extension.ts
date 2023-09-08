@@ -18,9 +18,10 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 function setupViews(context: vscode.ExtensionContext) {
-	const provider = new GiteaPCViewProvider(context.extensionUri);
+	const giteapcViewProvider = new GiteaPCViewProvider(context.extensionUri);
 	context.subscriptions.push(
-		vscode.window.registerWebviewViewProvider(GiteaPCViewProvider.viewType, provider));
+		vscode.window.registerWebviewViewProvider(GiteaPCViewProvider.viewType, giteapcViewProvider));
+
 	console.log("Views successfully registered !");
 }
 function checkEnvironment() {

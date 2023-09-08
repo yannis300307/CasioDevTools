@@ -1,18 +1,18 @@
 import { readFileSync } from 'fs';
 import * as vscode from 'vscode';
-import { giteapcGetLibsList, giteapcInstallLib } from './installations';
+import { giteapcGetLibsList, giteapcInstallLib, giteapcUninstallLib } from './installations';
 import { logMessage, logWarn } from './utils';
 
 export class GiteaPCViewProvider implements vscode.WebviewViewProvider {
-    public static readonly viewType = 'casiodev.giteapc';
+	public static readonly viewType = 'casiodev.giteapc';
 
 	private _view?: vscode.WebviewView;
 
-    constructor(
+	constructor(
 		private readonly _extensionUri: vscode.Uri,
 	) { }
-    
-    public resolveWebviewView(
+
+	public resolveWebviewView(
 		webviewView: vscode.WebviewView,
 		context: vscode.WebviewViewResolveContext,
 		_token: vscode.CancellationToken,
@@ -37,25 +37,41 @@ export class GiteaPCViewProvider implements vscode.WebviewViewProvider {
 						logMessage("Installing " + data.value + " ...");
 						var result = await giteapcInstallLib(data.value);
 						if (result[0] === "failed") {
-							logWarn('An error ocurred during the installation of "' + data.value +'" : ' + result[1]);
+							logWarn('An error ocurred during the installation of "' + data.value + '" : ' + result[1]);
 						} else if (result[0] === "success") {
 							logMessage('"' + data.value + '" has been installed !');
+							this.updateLibsList(data.search_bar_value);
+						}
+						break;
+					}
+				case 'uninstall_button_pressed':
+					{
+						logMessage("Uninstalling " + data.value + " ...");
+						var result = await giteapcUninstallLib(data.value);
+						if (result[0] === "failed") {
+							logWarn('An error ocurred during the uninstallation of "' + data.value + '" : ' + result[1]);
+						} else if (result[0] === "success") {
+							logMessage('"' + data.value + '" has been uninstalled !');
+							this.updateLibsList(data.search_bar_value);
 						}
 						break;
 					}
 				case 'search_lib':
 					{
 						console.log("Searching for " + data.value + " ...");
-						var newValues = await giteapcGetLibsList(data.value);
-						console.log(newValues);
-						this._view?.webview.postMessage({ type: 'update_lib_list', data: newValues});
+						this.updateLibsList(data.value);
 						break;
 					}
 			}
 		});
-		
-    }
-    private _getHtmlForWebview() {
+
+	}
+	private async updateLibsList(libName: string) {
+		var newValues = await giteapcGetLibsList(libName);
+		this._view?.webview.postMessage({ type: 'update_lib_list', data: newValues });
+	}
+
+	private _getHtmlForWebview() {
 		var defaultHtml;
 		try {
 			defaultHtml = readFileSync(vscode.Uri.joinPath(this._extensionUri, "webviews", "giteapc.html").fsPath, 'utf8');
@@ -64,7 +80,6 @@ export class GiteaPCViewProvider implements vscode.WebviewViewProvider {
 			defaultHtml = `<html><p>An error occured during the loading of the webview. Please reinstall CasioDevTools.</p></html>`;
 		}
 
-        return defaultHtml;
-    }
+		return defaultHtml;
+	}
 }
-    
