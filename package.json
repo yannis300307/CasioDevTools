@@ -33,6 +33,11 @@
           "type": "webview",
           "id": "casiodev.giteapc",
           "name": "GiteaPC Manage And Install"
+        },
+        {
+          "type": "webview",
+          "id": "casiodv.fxsdk",
+          "name": "Fxsdk Compile And Manage Projects"
         }
       ]
     }

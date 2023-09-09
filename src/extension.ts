@@ -6,6 +6,7 @@ import { installGiteapc } from './installations';
 import { InputBoxOptions } from 'vscode';
 import { GiteaPCViewProvider } from "./gitepc_webview";
 import { logWarn } from './utils';
+import { FxsdkViewProvider } from './fxsdk_webview';
 
 export var OS_NAME: string;
 export var IS_WSL_INSTALLED: boolean;
@@ -21,6 +22,10 @@ function setupViews(context: vscode.ExtensionContext) {
 	const giteapcViewProvider = new GiteaPCViewProvider(context.extensionUri);
 	context.subscriptions.push(
 		vscode.window.registerWebviewViewProvider(GiteaPCViewProvider.viewType, giteapcViewProvider));
+	
+	const fxsdkViewProvider = new FxsdkViewProvider(context.extensionUri);
+	context.subscriptions.push(
+		vscode.window.registerWebviewViewProvider(FxsdkViewProvider.viewType, fxsdkViewProvider));
 
 	console.log("Views successfully registered !");
 }
