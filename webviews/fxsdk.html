@@ -6,6 +6,31 @@
         .title {
             text-align: center;
         }
+
+        .base_button {
+            display: block;
+            border: none;
+            height: 2em;
+            width: 60%;
+            background: var(--vscode-button-background);
+            color: white;
+            border-radius: 0.2em;
+            outline-color: var(--vscode-button-border);
+            margin-top: 1em;
+            margin-bottom: 1em;
+            margin-right: auto;
+            margin-left: auto;
+            float: center;
+        }
+
+        .base_button:hover {
+            background: var(--vscode-button-hoverBackground);
+        }
+
+        .base_button:active {
+            outline: double var(--vscode-button-hoverBackground);
+        }
+
     </style>
     <script>
 
@@ -14,6 +39,15 @@
 
 <body>
     <h2 class="title">Fxsdk Compile And Manage Projects</h2>
+
+    <h3>Compilation:</h3>
+    <button id="CG_button" class="compile_button base_button">Compile for CG</button>
+    <button id="FX_button" class="compile_button base_button">Compile for FX</button>
+
+    <h3>Project Management:</h3>
+    <button id="create_project" class="base_button">Create a new project</button>
+
+    
 </body>
 
 </html>
