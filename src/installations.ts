@@ -2,6 +2,8 @@ import * as cp from 'child_process';
 import { IS_GITEAPC_INSTALLED, IS_WSL_INSTALLED, OS_NAME } from './extension';
 import { getSync } from './request_utils';
 import { getGiteapcInstalled } from './environment_checker';
+import { logMessage } from './utils';
+import { promisify } from 'util';
 
 const WSL_START_COMMAND = "wsl --shell-type login";
 
@@ -55,8 +57,8 @@ export async function giteapcUninstallLib(libName: string) {
     } return ["failed", "", false];
 }
 
-export async function executeCommandAsync(command: string) {
-    var output = executeCommand(command);
+export async function executeCommandAsync(command: string, rootPassword = "") {
+    var output = executeCommand(command, rootPassword);
     return output;
 }
 
@@ -127,6 +129,19 @@ export async function giteapcGetLibsList(libName: string) {
     return [];
 }
 
+export function installFxsdk(rootPassword: string, onLog: (log: string) => any, onExit: (log: string) => any) {
+    if (IS_GITEAPC_INSTALLED) {
+        // install fxsdk dependencies
+        executeCommandCallbackOnLog("wsl --shell-type login sudo apt install cmake python3-pil libusb-1.0-0-dev libsdl2-dev libpng16-16 libpng-dev ncurses-dev -y; sudo apt install  libmpfr-dev libmpc-dev libgmp-dev libppl-dev flex texinfo -y; giteapc install Lephenixnoir/fxsdk:noudisks2 Lephenixnoir/sh-elf-binutils Lephenixnoir/sh-elf-gcc -y", onLog, rootPassword, ()=>{});
+        //executeCommandCallbackOnLog("sudo apt install  libmpfr-dev libmpc-dev libgmp-dev libppl-dev flex texinfo -y", onLog, rootPassword, ()=>{});
+
+        //executeCommandCallbackOnLog("giteapc install Lephenixnoir/fxsdk:noudisks2 Lephenixnoir/sh-elf-binutils Lephenixnoir/sh-elf-gcc -y", onLog, "", ()=>{});
+        
+    } else {
+        return ["failed", "", false];
+    }
+}
+
 function executeCommand(command: string, rootPassword = "") {
     if (rootPassword) {
         var command = 'echo ' + rootPassword + ' | sudo -S ' + command;
@@ -152,4 +167,25 @@ function executeCommand(command: string, rootPassword = "") {
         return ["failed", "", rootPassword !== ""];
     }
     return ["success", output, rootPassword !== ""];
+}
+
+function executeCommandCallbackOnLog(command: string, onLog: (log: string) => any, rootPassword = "", onExit: () => any) {
+    if (rootPassword) {
+        var command = 'echo ' + rootPassword + ' | sudo -S ' + command;
+    } else {
+        var command = command;
+    }
+
+    var output:cp.ChildProcess;
+
+    if ((OS_NAME === "windows" && IS_WSL_INSTALLED)) {
+        output = cp.exec(WSL_START_COMMAND + " " + command);
+    } else if (OS_NAME === "linux") {
+        output = cp.exec(command);
+    } else { return; }
+
+    output.stdout?.on('data', data => { onLog(data); });
+    output.stderr?.on('data', data => { onLog(data); });
+
+    output.on('exit', () => { onExit(); });
 }

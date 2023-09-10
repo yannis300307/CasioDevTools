@@ -51,3 +51,19 @@ export function getGiteapcInstalled() {
         return false;
     }
 }
+
+export function getFxsdkInstalled() {
+    if ((OS_NAME === "windows" && IS_WSL_INSTALLED)) {
+        try {
+            var fxsdkVersion = cp.execSync("wsl --shell-type login fxsdk --version");
+        } catch (_) { return false; }
+        return fxsdkVersion.toString('utf8').includes("fxSDK");
+    } else if (OS_NAME === "linux") {
+        try {
+            var fxsdkVersion = cp.execSync("fxsdk --version");
+        } catch (_) { return false; }
+        return fxsdkVersion.toString('utf8').includes("fxSDK");
+    } else {
+        return false;
+    }
+}
