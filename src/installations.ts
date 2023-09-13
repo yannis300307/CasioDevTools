@@ -129,10 +129,10 @@ export async function giteapcGetLibsList(libName: string) {
     return [];
 }
 
-export function installFxsdk(rootPassword: string, onLog: (log: string) => any, onExit: (log: string) => any) {
+export function installFxsdk(rootPassword: string, onLog: (log: string) => any, onExit: () => any) {
     if (IS_GITEAPC_INSTALLED) {
         // install fxsdk dependencies
-        executeCommandCallbackOnLog("wsl --shell-type login sudo apt install cmake python3-pil libusb-1.0-0-dev libsdl2-dev libpng16-16 libpng-dev ncurses-dev -y; sudo apt install  libmpfr-dev libmpc-dev libgmp-dev libppl-dev flex texinfo -y; giteapc install Lephenixnoir/fxsdk:noudisks2 Lephenixnoir/sh-elf-binutils Lephenixnoir/sh-elf-gcc -y", onLog, rootPassword, ()=>{});
+        executeCommandCallbackOnLog("wsl --shell-type login sudo apt install cmake python3-pil libusb-1.0-0-dev libsdl2-dev libpng16-16 libpng-dev ncurses-dev -y; sudo apt install  libmpfr-dev libmpc-dev libgmp-dev libppl-dev flex texinfo -y; giteapc install Lephenixnoir/fxsdk:noudisks2 Lephenixnoir/sh-elf-binutils Lephenixnoir/sh-elf-gcc -y", onLog, rootPassword, onExit);
         //executeCommandCallbackOnLog("sudo apt install  libmpfr-dev libmpc-dev libgmp-dev libppl-dev flex texinfo -y", onLog, rootPassword, ()=>{});
 
         //executeCommandCallbackOnLog("giteapc install Lephenixnoir/fxsdk:noudisks2 Lephenixnoir/sh-elf-binutils Lephenixnoir/sh-elf-gcc -y", onLog, "", ()=>{});
@@ -187,5 +187,5 @@ function executeCommandCallbackOnLog(command: string, onLog: (log: string) => an
     output.stdout?.on('data', data => { onLog(data); });
     output.stderr?.on('data', data => { onLog(data); });
 
-    output.on('exit', () => { onExit(); });
+    output.on('exit', () => { onExit(); console.log("finished"); });
 }

@@ -57,23 +57,17 @@ export function startFxsdkInstallation(answer:string | undefined, retry=false) {
             }
             logLongInstallation();
 			logMessage("Installing fxsdk... Warning : It could takes up to 1 hour to install !");
-            installFxsdk(password, (log: string) => { let logs = log.split("\n"); lastLog = logs[logs.length-1]; }, () => { isLoading = false; });
-			//logWarn('An error ocurred during the installation of Fxsdk : ');
-			//vscode.window.showInformationMessage("GiteaPC is now ready to use on your system !");
+			installFxsdk(password, (log: string) => { let logs = log.split("\n"); lastLog = logs[logs.length - 1]; }, () => { finishFxsdkInstallation(); });
 			return true;
 		});
     }
     return false;
 }
-function waitFor(conditionFunction: any) {
 
-    const poll = (resolve: any) => {
-        if (conditionFunction()) {resolve();}
-        else {setTimeout((_: any) => poll(resolve), 400);}
-    };
-  
-    return new Promise(poll);
-  }
+function finishFxsdkInstallation() {
+	isLoading = false;
+	logMessage("Fxsdk is now ready to use on your system !");
+}
 
 function logLongInstallation() {
     isLoading = true;
@@ -84,12 +78,16 @@ function logLongInstallation() {
 	}, async (progress) => {
         await updateProgress(progress);
 
-        await waitFor((_: any) => isLoading === false);
+        //await waitFor((_: any) => isLoading === false);
 	});
 }
 
 async function updateProgress(progress: vscode.Progress<{ message?: string | undefined; increment?: number | undefined; }>) {
-    if (!isLoading) { return; }
-    progress.report({ message: lastLog });
-    setTimeout(async () => { await updateProgress(progress); }, 200);
+	if (!isLoading) { return; }
+	const poll = (resolve: any) => {
+        if (!isLoading) {resolve();}
+		else { setTimeout((_: any) => { poll(resolve); progress.report({ message: lastLog }); }, 100);}
+    };
+  
+    return new Promise(poll);
 }
