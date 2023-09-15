@@ -52,7 +52,7 @@ function checkEnvironment() {
 			.showInformationMessage("GiteaPC is not installed on your system. Do you want to install it automaticaly?", "Yes", "No")
 			.then(answer => { IS_GITEAPC_INSTALLED = startGiteapcInstallation(answer); });
 	}
-	if (IS_FXSDK_INSTALLED) { // add ! befor IS_FXSDK_INSTALLED
+	if (!IS_FXSDK_INSTALLED) {
 		vscode.window
 			.showInformationMessage("Fxsdk is not installed on your system. Do you want to install it automaticaly?", "Yes", "No")
 			.then(answer => { IS_FXSDK_INSTALLED = startFxsdkInstallation(answer); });
