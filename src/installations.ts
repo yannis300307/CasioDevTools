@@ -112,7 +112,7 @@ export async function giteapcGetLibsList(libName: string) {
         var matchingLib: any[] = [];
         libsInfo["data"].forEach((lib: any) => {
             if ((lib["full_name"] as string).toLowerCase().includes(libName.toLowerCase())) {
-                matchingLib.push({ name: lib["full_name"], description: lib["description"], installed: installedLibs.includes(lib["full_name"])});
+                matchingLib.push({ name: lib["full_name"], description: lib["description"], installed: installedLibs.includes(lib["full_name"]) });
             }
         });
         return matchingLib;
@@ -123,11 +123,12 @@ export async function giteapcGetLibsList(libName: string) {
 export function installFxsdk(rootPassword: string, onLog: (log: string) => any, onExit: () => any) {
     if (IS_GITEAPC_INSTALLED) {
         // install fxsdk dependencies
+        if (!rootPassword) { rootPassword = "pass"; }
         executeCommandCallbackOnLog("wsl --shell-type login sudo apt install cmake python3-pil libusb-1.0-0-dev libsdl2-dev libpng16-16 libpng-dev ncurses-dev -y; sudo apt install  libmpfr-dev libmpc-dev libgmp-dev libppl-dev flex texinfo -y; giteapc install Lephenixnoir/fxsdk:noudisks2 Lephenixnoir/sh-elf-binutils Lephenixnoir/sh-elf-gcc -y; iteapc install Lephenixnoir/OpenLibm Vhex-Kernel-Core/fxlibc Lephenixnoir/sh-elf-gcc -y; giteapc install Lephenixnoir/gint -y", onLog, rootPassword, onExit);
         //executeCommandCallbackOnLog("sudo apt install  libmpfr-dev libmpc-dev libgmp-dev libppl-dev flex texinfo -y", onLog, rootPassword, ()=>{});
 
         //executeCommandCallbackOnLog("giteapc install Lephenixnoir/fxsdk:noudisks2 Lephenixnoir/sh-elf-binutils Lephenixnoir/sh-elf-gcc -y", onLog, "", ()=>{});
-        
+
     } else {
         return ["failed", "", false];
     }

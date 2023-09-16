@@ -38,7 +38,11 @@ export async function executeCommandAsync(command: string, rootPassword = "") {
 
 export function executeCommandCallbackOnLog(command: string, onLog: (log: string) => any, rootPassword = "", onExit: () => any) {
     if (rootPassword) {
-        var command = 'echo ' + rootPassword + ' | sudo -S ' + command;
+        if (OS_NAME === "linux") {
+            var command = 'echo ' + rootPassword + ' | sudo -S ' + command;
+        } else {
+            var command = "-u root " + command;
+        }
     } else {
         var command = command;
     }
@@ -51,8 +55,8 @@ export function executeCommandCallbackOnLog(command: string, onLog: (log: string
         output = cp.exec(command);
     } else { return; }
 
-    output.stdout?.on('data', data => { onLog(data.replace("\n\n", "\n")); console.log(data); });
-    output.stderr?.on('data', data => { onLog(data.replace("\n\n", "\n")); console.log(data); });
+    output.stdout?.on('data', data => { onLog(data.replace("\n", "")); console.log(data); });
+    output.stderr?.on('data', data => { onLog(data.replace("\n", "")); console.log(data); });
 
     output.on('exit', () => { onExit(); console.log("finished"); });
 }
