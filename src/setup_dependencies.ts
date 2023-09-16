@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { installFxsdk, installGiteapc } from './installations';
 import { InputBoxOptions } from 'vscode';
 import { logMessage, logWarn } from './utils';
+import { getFxsdkInstalled } from './environment_checker';
 
 
 var lastLog = "";
@@ -66,7 +67,11 @@ export function startFxsdkInstallation(answer:string | undefined, retry=false) {
 
 function finishFxsdkInstallation() {
 	isLoading = false;
-	logMessage("Fxsdk is now ready to use on your system !");
+	if (getFxsdkInstalled()) {
+		logMessage("Fxsdk is now ready to use on your system!");
+	} else {
+		logWarn("An error occured during the installation of Fxsdk!");
+	}
 }
 
 function logLongInstallation() {
