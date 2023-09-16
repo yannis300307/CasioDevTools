@@ -30,10 +30,20 @@
         .base_button:active {
             outline: double var(--vscode-button-hoverBackground);
         }
-
     </style>
     <script>
+        window.addEventListener('load', function () {
+            const vscode = acquireVsCodeApi();
 
+            console.log("working !");
+
+            document.querySelector('#CG_button').addEventListener('click', () => {
+                vscode.postMessage({ type: 'compile_cg' });
+            });
+            document.querySelector('#FX_button').addEventListener('click', () => {
+                vscode.postMessage({ type: 'compile_fx' });
+            });
+        });
     </script>
 </head>
 
@@ -47,7 +57,7 @@
     <h3>Project Management:</h3>
     <button id="create_project" class="base_button">Create a new project</button>
 
-    
+
 </body>
 
 </html>
