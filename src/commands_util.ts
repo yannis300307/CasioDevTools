@@ -47,7 +47,7 @@ export function executeCommandCallbackOnLog(command: string, onLog: (log: string
         var command = command;
     }
 
-    var output:cp.ChildProcess;
+    var output: cp.ChildProcess;
 
     if ((OS_NAME === "windows" && IS_WSL_INSTALLED)) {
         output = cp.exec(WSL_START_COMMAND + " " + command);

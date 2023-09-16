@@ -22,7 +22,7 @@ function setupViews(context: vscode.ExtensionContext) {
 	const giteapcViewProvider = new GiteaPCViewProvider(context.extensionUri);
 	context.subscriptions.push(
 		vscode.window.registerWebviewViewProvider(GiteaPCViewProvider.viewType, giteapcViewProvider));
-	
+
 	const fxsdkViewProvider = new FxsdkViewProvider(context.extensionUri);
 	context.subscriptions.push(
 		vscode.window.registerWebviewViewProvider(FxsdkViewProvider.viewType, fxsdkViewProvider));
@@ -33,7 +33,7 @@ function checkEnvironment() {
 	OS_NAME = getOS();
 	IS_WSL_INSTALLED = getWslInstalled();
 
-	
+
 	if (OS_NAME === "unknown") {
 		logWarn('Casio Dev Tools extension is not actually compatible with your OS ... many features will not work.');
 	} else if (OS_NAME === "windows" && !IS_WSL_INSTALLED) {
@@ -42,7 +42,7 @@ function checkEnvironment() {
 
 	IS_GITEAPC_INSTALLED = getGiteapcInstalled();
 	IS_FXSDK_INSTALLED = getFxsdkInstalled();
-	
+
 	console.log("OS name ? " + OS_NAME);
 	console.log("Is wsl installed ? " + IS_WSL_INSTALLED);
 	console.log("Is GiteaPC installed ? " + IS_GITEAPC_INSTALLED);
@@ -62,4 +62,4 @@ function checkEnvironment() {
 }
 
 // This method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }
