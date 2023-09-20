@@ -1,7 +1,11 @@
 import { readFileSync } from 'fs';
 import * as vscode from 'vscode';
 import { logMessage } from './utils';
-import { compileCG, compileFX } from './fxsdk_manager';
+import { compileCG, compileFX, createProject } from './fxsdk_manager';
+import { IS_WSL_INSTALLED } from './extension';
+import { getRunningWslDistroName } from './environment_checker';
+import { execSync } from 'child_process';
+import { getWslPathFromWindows } from './WSL_utils';
 
 
 var isLoading = false;
@@ -46,6 +50,35 @@ export class FxsdkViewProvider implements vscode.WebviewViewProvider {
 					{
 						logLongCompilling();
 						compileFX((log) => { lastLog = log; }, compillingFinished);
+						break;
+					}
+				case "create_project":
+					{
+						const options: vscode.OpenDialogOptions = {
+							canSelectMany: false,
+							openLabel: 'Select',
+							canSelectFiles: false,
+							canSelectFolders: true,
+						};
+
+						vscode.window.showSaveDialog(options).then(fileUri => {
+							var filePath = fileUri ? fileUri : 'undefined';
+							if (filePath !== "undefined" && typeof filePath !== 'string') {
+								const wslPath = getWslPathFromWindows(filePath.fsPath.replaceAll("\\", "/"));
+								console.log(wslPath);
+								const pathParts = wslPath.split("/");
+								const projectName = pathParts[pathParts.length-1];
+
+								createProject(pathParts.slice(0, pathParts.length-1).join("/"), projectName);
+								
+								/*vscode.window.showInformationMessage("Your project \"" + projectName + "\" has successfully been created!", "yes", "no").then(answer => {
+
+								});*/
+								console.log("Your project \"" + projectName + "\" has successfully been created!");
+							}
+						});
+
+						//createProject("", "");
 						break;
 					}
 

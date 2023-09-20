@@ -1,6 +1,7 @@
 import * as cp from 'child_process';
 import * as os from 'os';
 import { IS_WSL_INSTALLED, OS_NAME } from './extension';
+import { executeCommand } from './commands_util';
 
 
 /**
@@ -50,6 +51,14 @@ export function getGiteapcInstalled() {
     } else {
         return false;
     }
+}
+
+export function getRunningWslDistroName() {
+    if (IS_WSL_INSTALLED) {
+        var result = cp.execSync("wsl --list --running --quiet").toString('utf16le').split(" ")[0].replace("\n", "").replace("\r", "");
+        return result;
+    }
+    return "";
 }
 
 export function getFxsdkInstalled() {
