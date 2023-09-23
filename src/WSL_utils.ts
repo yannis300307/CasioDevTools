@@ -7,3 +7,10 @@ export function getWslPathFromWindows(path: string) {
     }
     return "";
 }
+
+export function getWindowsPathFromWsl(path: string) {
+    if (IS_WSL_INSTALLED) {
+        return execSync("wsl wslpath -w \"" + path + "\"", { encoding: "utf-8" }).trim();
+    }
+    return "";
+}

@@ -5,7 +5,7 @@ import { compileCG, compileFX, createProject } from './fxsdk_manager';
 import { IS_WSL_INSTALLED } from './extension';
 import { getRunningWslDistroName } from './environment_checker';
 import { execSync } from 'child_process';
-import { getWslPathFromWindows } from './WSL_utils';
+import { getWindowsPathFromWsl, getWslPathFromWindows } from './WSL_utils';
 
 
 var isLoading = false;
@@ -64,17 +64,35 @@ export class FxsdkViewProvider implements vscode.WebviewViewProvider {
 						vscode.window.showSaveDialog(options).then(fileUri => {
 							var filePath = fileUri ? fileUri : 'undefined';
 							if (filePath !== "undefined" && typeof filePath !== 'string') {
-								const wslPath = getWslPathFromWindows(filePath.fsPath.replaceAll("\\", "/"));
-								console.log(wslPath);
-								const pathParts = wslPath.split("/");
-								const projectName = pathParts[pathParts.length-1];
+								var path: string | undefined, projectName: string, pathParts: string[];
+								if (IS_WSL_INSTALLED) {
+									path = getWslPathFromWindows(filePath.fsPath.replaceAll("\\", "/"));
+									console.log(path);
+									pathParts = path.split("/");
+									projectName = pathParts[pathParts.length - 1];
+								} else {
+									path = fileUri?.fsPath;
+									if (path === undefined) { return; }
+									console.log(path);
+									pathParts = path.split("/");
+									projectName = pathParts[pathParts.length - 1];
+								}
 
-								createProject(pathParts.slice(0, pathParts.length-1).join("/"), projectName);
-								
-								/*vscode.window.showInformationMessage("Your project \"" + projectName + "\" has successfully been created!", "yes", "no").then(answer => {
+								if (path === undefined) { return; }
 
-								});*/
-								console.log("Your project \"" + projectName + "\" has successfully been created!");
+								createProject(pathParts.slice(0, pathParts.length - 1).join("/"), projectName);
+
+								vscode.window.showInformationMessage("Your project \"" + projectName + "\" has successfully been created! Would you like to open it?", "yes", "no").then(answer => {
+									if (answer === "yes") {
+										var openPath;
+										if (IS_WSL_INSTALLED) {
+											openPath = getWindowsPathFromWsl((path as string));
+										} else {
+											openPath = (path as string);
+										}
+										vscode.commands.executeCommand("vscode.openFolder", vscode.Uri.file(openPath));
+									}
+								});
 							}
 						});
 
