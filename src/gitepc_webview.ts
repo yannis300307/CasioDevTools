@@ -2,6 +2,7 @@ import { readFileSync } from 'fs';
 import * as vscode from 'vscode';
 import { giteapcGetLibsList, giteapcInstallLib, giteapcUninstallLib } from './installations';
 import { logMessage, logWarn } from './utils';
+import { IS_GITEAPC_INSTALLED } from './extension';
 
 export class GiteaPCViewProvider implements vscode.WebviewViewProvider {
 	public static readonly viewType = 'casiodev.giteapc';
@@ -32,6 +33,14 @@ export class GiteaPCViewProvider implements vscode.WebviewViewProvider {
 
 		webviewView.webview.onDidReceiveMessage(async data => {
 			switch (data.type) {
+				case "check_for_giteapc_installed":
+					{
+						console.log("Checking if the GiteaPC view can be unlocked ...");
+						if (IS_GITEAPC_INSTALLED) {
+							this._view?.webview.postMessage({ type: 'unlock' });
+						}
+						break;
+					}
 				case 'install_button_pressed':
 					{
 						logMessage("Installing " + data.value + " ...");
