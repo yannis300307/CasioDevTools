@@ -2,7 +2,8 @@ import { readFileSync } from 'fs';
 import * as vscode from 'vscode';
 import { giteapcGetLibsList, giteapcInstallLib, giteapcUninstallLib } from './installations';
 import { logMessage, logWarn } from './utils';
-import { IS_GITEAPC_INSTALLED } from './extension';
+import { INSTALLING_GITEAPC, IS_GITEAPC_INSTALLED } from './extension';
+import { startGiteapcInstallation } from './setup_dependencies';
 
 export class GiteaPCViewProvider implements vscode.WebviewViewProvider {
 	public static readonly viewType = 'casiodev.giteapc';
@@ -71,6 +72,14 @@ export class GiteaPCViewProvider implements vscode.WebviewViewProvider {
 						this.updateLibsList(data.value);
 						break;
 					}
+				case 'install_giteapc':
+					{
+						if (!INSTALLING_GITEAPC)
+						{
+							startGiteapcInstallation("yes", false);
+						}
+					break;
+				}
 			}
 		});
 
@@ -90,5 +99,11 @@ export class GiteaPCViewProvider implements vscode.WebviewViewProvider {
 		}
 
 		return defaultHtml;
+	}
+
+	public updateInstallation() {
+		if (IS_GITEAPC_INSTALLED) {
+			this._view?.webview.postMessage({ type: 'unlock' });
+		}
 	}
 }

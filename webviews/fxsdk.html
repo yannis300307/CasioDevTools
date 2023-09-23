@@ -47,6 +47,11 @@
                 vscode.postMessage({ type: 'create_project' });
             });
 
+            document.querySelector('.install_fxsdk_button').addEventListener('click', () => {
+                vscode.postMessage({ type: 'install_fxsdk' });
+            });
+
+
             window.addEventListener('message', event => {
                 const message = event.data; // The json data that the extension sent
                 switch (message.type) {
@@ -78,7 +83,7 @@
     </div>
     <div id="unavailable">
         <p>Fxsdk seems to be not installed on your computer ...</p>
-        <button class="base_button">Install Fxsdk automaticaly</button>
+        <button class="base_button install_fxsdk_button">Install Fxsdk automaticaly</button>
     </div>
 
 </body>

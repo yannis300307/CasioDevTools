@@ -187,6 +187,11 @@
                 vscode.postMessage({ type: 'search_lib', value: lib_name });
             });
 
+            document.querySelector('.install_giteapc_button').addEventListener('click', () => {
+                vscode.postMessage({ type: 'install_giteapc' });
+            });
+
+
             // Handle messages sent from the extension to the webview
             window.addEventListener('message', event => {
                 const message = event.data; // The json data that the extension sent

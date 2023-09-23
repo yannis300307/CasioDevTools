@@ -2,7 +2,7 @@
   "name": "casiodev",
   "displayName": "CasioDevTools",
   "description": "An extension adding useful tools for Casio calculators programming.",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "repository": "https://github.com/yannis300307/CasioDevTools",
   "icon": "resources/extension_icon.png",
   "engines": {
@@ -18,6 +18,14 @@
       {
         "command": "casiodev.startemulator",
         "title": "Start Emulator"
+      },
+      {
+        "command": "casiodev.reloadfxsdkwebview",
+        "title": "Reload the Fxsdk Webview"
+      },
+      {
+        "command": "casiodev.reloadgiteapcwebview",
+        "title": "Reload the GiteaPC Webview"
       }
     ],
     "viewsContainers": {

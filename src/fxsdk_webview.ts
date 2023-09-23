@@ -2,8 +2,9 @@ import { readFileSync } from 'fs';
 import * as vscode from 'vscode';
 import { logMessage } from './utils';
 import { compileCG, compileFX, createProject } from './fxsdk_manager';
-import { IS_FXSDK_INSTALLED, IS_WSL_INSTALLED } from './extension';
+import { INSTALLING_FXSDK, IS_FXSDK_INSTALLED, IS_WSL_INSTALLED } from './extension';
 import { getWindowsPathFromWsl, getWslPathFromWindows } from './WSL_utils';
+import { startFxsdkInstallation } from './setup_dependencies';
 
 
 var isLoading = false;
@@ -88,8 +89,8 @@ export class FxsdkViewProvider implements vscode.WebviewViewProvider {
 
 								createProject(pathParts.slice(0, pathParts.length - 1).join("/"), projectName);
 
-								vscode.window.showInformationMessage("Your project \"" + projectName + "\" has successfully been created! Would you like to open it?", "yes", "no").then(answer => {
-									if (answer === "yes") {
+								vscode.window.showInformationMessage("Your project \"" + projectName + "\" has successfully been created! Would you like to open it?", "Yes", "No").then(answer => {
+									if (answer === "Yes") {
 										var openPath;
 										if (IS_WSL_INSTALLED) {
 											openPath = getWindowsPathFromWsl((path as string));
@@ -101,6 +102,14 @@ export class FxsdkViewProvider implements vscode.WebviewViewProvider {
 								});
 							}
 						});
+						break;
+					}
+				case 'install_fxsdk':
+					{
+						console.log(INSTALLING_FXSDK);
+						if (!INSTALLING_FXSDK) {
+							startFxsdkInstallation("Yes", false);
+						}
 						break;
 					}
 
@@ -119,6 +128,12 @@ export class FxsdkViewProvider implements vscode.WebviewViewProvider {
 		}
 
 		return defaultHtml;
+	}
+
+	public updateInstallation() {
+		if (IS_FXSDK_INSTALLED) {
+			this._view?.webview.postMessage({ type: 'unlock' });
+		}
 	}
 }
 
