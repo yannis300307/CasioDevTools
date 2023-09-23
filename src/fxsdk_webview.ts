@@ -2,7 +2,7 @@ import { readFileSync } from 'fs';
 import * as vscode from 'vscode';
 import { logMessage } from './utils';
 import { compileCG, compileFX, createProject } from './fxsdk_manager';
-import { IS_WSL_INSTALLED } from './extension';
+import { IS_FXSDK_INSTALLED, IS_WSL_INSTALLED } from './extension';
 import { getRunningWslDistroName } from './environment_checker';
 import { execSync } from 'child_process';
 import { getWindowsPathFromWsl, getWslPathFromWindows } from './WSL_utils';
@@ -40,6 +40,14 @@ export class FxsdkViewProvider implements vscode.WebviewViewProvider {
 
 		webviewView.webview.onDidReceiveMessage(async data => {
 			switch (data.type) {
+				case "check_for_fxsdk_installed":
+					{
+						console.log("Checking if the FXSDK view can be unlocked ...");
+						if (IS_FXSDK_INSTALLED) {
+							this._view?.webview.postMessage({ type: 'unlock' });
+						}
+						break;
+					}
 				case "compile_cg":
 					{
 						logLongCompilling();
@@ -102,7 +110,6 @@ export class FxsdkViewProvider implements vscode.WebviewViewProvider {
 
 			}
 		});
-
 	}
 
 

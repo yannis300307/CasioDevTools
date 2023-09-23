@@ -46,6 +46,21 @@
             document.querySelector('#create_project').addEventListener('click', () => {
                 vscode.postMessage({ type: 'create_project' });
             });
+
+            window.addEventListener('message', event => {
+                const message = event.data; // The json data that the extension sent
+                switch (message.type) {
+                    case 'unlock':
+                        {
+                            document.querySelector("#main").hidden = false;
+                            document.querySelector("#unavailable").hidden = true;
+                            console.log("Unlocked Fxsdk webview !")
+                            break;
+                        }
+                }
+            });
+            // Send a message to the webview provider to unlock the webview if FXSDK is installed.
+            vscode.postMessage({ type: 'check_for_fxsdk_installed' });
         });
     </script>
 </head>
@@ -53,13 +68,18 @@
 <body>
     <h2 class="title">Fxsdk Compile And Manage Projects</h2>
 
-    <h3>Compilation:</h3>
-    <button id="CG_button" class="compile_button base_button">Compile for CG</button>
-    <button id="FX_button" class="compile_button base_button">Compile for FX</button>
+    <div id="main" hidden>
+        <h3>Compilation:</h3>
+        <button id="CG_button" class="compile_button base_button">Compile for CG</button>
+        <button id="FX_button" class="compile_button base_button">Compile for FX</button>
 
-    <h3>Project Management:</h3>
-    <button id="create_project" class="base_button">Create a new project</button>
-
+        <h3>Project Management:</h3>
+        <button id="create_project" class="base_button">Create a new project</button>
+    </div>
+    <div id="unavailable">
+        <p>Fxsdk seems to be not installed on your computer ...</p>
+        <button class="base_button">Install Fxsdk automaticaly</button>
+    </div>
 
 </body>
 
