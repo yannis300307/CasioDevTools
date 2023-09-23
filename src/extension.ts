@@ -46,6 +46,11 @@ function checkEnvironment() {
 	console.log("OS name ? " + OS_NAME);
 	console.log("Is wsl installed ? " + IS_WSL_INSTALLED);
 	console.log("Is GiteaPC installed ? " + IS_GITEAPC_INSTALLED);
+	if (vscode.workspace.workspaceFolders !== undefined) {
+		console.log("Current folder ? " + vscode.workspace.workspaceFolders[0].uri.fsPath);
+	} else {
+		console.log("Current folder ? No opened folder");
+	}
 
 	if (!IS_GITEAPC_INSTALLED) {
 		vscode.window
