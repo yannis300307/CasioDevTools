@@ -3,8 +3,6 @@ import * as vscode from 'vscode';
 import { logMessage } from './utils';
 import { compileCG, compileFX, createProject } from './fxsdk_manager';
 import { IS_FXSDK_INSTALLED, IS_WSL_INSTALLED } from './extension';
-import { getRunningWslDistroName } from './environment_checker';
-import { execSync } from 'child_process';
 import { getWindowsPathFromWsl, getWslPathFromWindows } from './WSL_utils';
 
 
@@ -103,8 +101,6 @@ export class FxsdkViewProvider implements vscode.WebviewViewProvider {
 								});
 							}
 						});
-
-						//createProject("", "");
 						break;
 					}
 

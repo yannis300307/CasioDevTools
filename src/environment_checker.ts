@@ -1,7 +1,6 @@
 import * as cp from 'child_process';
 import * as os from 'os';
 import { IS_WSL_INSTALLED, OS_NAME } from './extension';
-import { executeCommand } from './commands_util';
 
 
 /**
@@ -27,7 +26,6 @@ export function getOS() {
  */
 export function getWslInstalled() {
     var checkMessage = "wsl is enabled and ready to use in casiodev";
-    var found = false;
     try {
         var wslCommand = cp.execSync("wsl echo " + checkMessage);
     } catch (_) { return false; }
