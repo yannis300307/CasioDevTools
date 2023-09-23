@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        .title {
+            text-align: center;
+        }
+
+        .base_button {
+            display: block;
+            border: none;
+            height: 2em;
+            width: 60%;
+            background: var(--vscode-button-background);
+            color: white;
+            border-radius: 0.2em;
+            outline-color: var(--vscode-button-border);
+            margin-top: 1em;
+            margin-bottom: 1em;
+            margin-right: auto;
+            margin-left: auto;
+            float: center;
+        }
+
+        .base_button:hover {
+            background: var(--vscode-button-hoverBackground);
+        }
+
+        .base_button:active {
+            outline: double var(--vscode-button-hoverBackground);
+        }
+    </style>
+    <script>
+        window.addEventListener('load', function () {
+            const vscode = acquireVsCodeApi();
+
+            console.log("working !");
+
+            document.querySelector('#CG_button').addEventListener('click', () => {
+                vscode.postMessage({ type: 'compile_cg' });
+            });
+            document.querySelector('#FX_button').addEventListener('click', () => {
+                vscode.postMessage({ type: 'compile_fx' });
+            });
+            document.querySelector('#create_project').addEventListener('click', () => {
+                vscode.postMessage({ type: 'create_project' });
+            });
+
+            window.addEventListener('message', event => {
+                const message = event.data; // The json data that the extension sent
+                switch (message.type) {
+                    case 'unlock':
+                        {
+                            document.querySelector("#main").hidden = false;
+                            document.querySelector("#unavailable").hidden = true;
+                            console.log("Unlocked Fxsdk webview !")
+                            break;
+                        }
+                }
+            });
+            // Send a message to the webview provider to unlock the webview if FXSDK is installed.
+            vscode.postMessage({ type: 'check_for_fxsdk_installed' });
+        });
+    </script>
+</head>
+
+<body>
+    <h2 class="title">Fxsdk Compile And Manage Projects</h2>
+
+    <div id="main" hidden>
+        <h3>Compilation:</h3>
+        <button id="CG_button" class="compile_button base_button">Compile for CG</button>
+        <button id="FX_button" class="compile_button base_button">Compile for FX</button>
+
+        <h3>Project Management:</h3>
+        <button id="create_project" class="base_button">Create a new project</button>
+    </div>
+    <div id="unavailable">
+        <p>Fxsdk seems to be not installed on your computer ...</p>
+        <button class="base_button">Install Fxsdk automaticaly</button>
+    </div>
+
+</body>
+
+</html>

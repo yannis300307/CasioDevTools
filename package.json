@@ -2,7 +2,9 @@
   "name": "casiodev",
   "displayName": "CasioDevTools",
   "description": "An extension adding useful tools for Casio calculators programming.",
-  "version": "0.0.1",
+  "version": "0.1.2",
+  "repository": "https://github.com/yannis300307/CasioDevTools",
+  "icon": "resources/extension_icon.png",
   "engines": {
     "vscode": "^1.81.0"
   },
@@ -23,7 +25,7 @@
         {
           "id": "casio-dev",
           "title": "CasioDevTools",
-          "icon": "ressources/view_icon.svg"
+          "icon": "resources/view_icon.svg"
         }
       ]
     },
@@ -33,6 +35,11 @@
           "type": "webview",
           "id": "casiodev.giteapc",
           "name": "GiteaPC Manage And Install"
+        },
+        {
+          "type": "webview",
+          "id": "casiodv.fxsdk",
+          "name": "Fxsdk Compile And Manage Projects"
         }
       ]
     }

@@ -1,9 +1,7 @@
 import * as cp from 'child_process';
-import { IS_GITEAPC_INSTALLED, IS_WSL_INSTALLED, OS_NAME } from './extension';
+import { IS_GITEAPC_INSTALLED, IS_WSL_INSTALLED } from './extension';
 import { getSync } from './request_utils';
-import { getGiteapcInstalled } from './environment_checker';
-
-const WSL_START_COMMAND = "wsl --shell-type login";
+import { executeCommand, executeCommandAsync, executeCommandCallbackOnLog } from './commands_util';
 
 
 export async function installGiteapc(password: string) {
@@ -53,11 +51,6 @@ export async function giteapcUninstallLib(libName: string) {
         var output = await executeCommandAsync("giteapc uninstall " + libName);
         return output;
     } return ["failed", "", false];
-}
-
-export async function executeCommandAsync(command: string) {
-    var output = executeCommand(command);
-    return output;
 }
 
 function getGiteapcPath() {
@@ -119,7 +112,7 @@ export async function giteapcGetLibsList(libName: string) {
         var matchingLib: any[] = [];
         libsInfo["data"].forEach((lib: any) => {
             if ((lib["full_name"] as string).toLowerCase().includes(libName.toLowerCase())) {
-                matchingLib.push({ name: lib["full_name"], description: lib["description"], installed: installedLibs.includes(lib["full_name"])});
+                matchingLib.push({ name: lib["full_name"], description: lib["description"], installed: installedLibs.includes(lib["full_name"]) });
             }
         });
         return matchingLib;
@@ -127,29 +120,12 @@ export async function giteapcGetLibsList(libName: string) {
     return [];
 }
 
-function executeCommand(command: string, rootPassword = "") {
-    if (rootPassword) {
-        var command = 'echo ' + rootPassword + ' | sudo -S ' + command;
+export function installFxsdk(rootPassword: string, onLog: (log: string) => any, onExit: () => any) {
+    if (IS_GITEAPC_INSTALLED) {
+        // install fxsdk dependencies
+        if (!rootPassword) { rootPassword = "pass"; }
+        executeCommandCallbackOnLog("wsl --shell-type login sudo apt install cmake python3-pil libusb-1.0-0-dev libsdl2-dev libpng16-16 libpng-dev ncurses-dev -y; sudo apt install  libmpfr-dev libmpc-dev libgmp-dev libppl-dev flex texinfo -y; giteapc install Lephenixnoir/fxsdk:noudisks2 Lephenixnoir/sh-elf-binutils Lephenixnoir/sh-elf-gcc -y; iteapc install Lephenixnoir/OpenLibm Vhex-Kernel-Core/fxlibc Lephenixnoir/sh-elf-gcc -y; giteapc install Lephenixnoir/gint -y", onLog, rootPassword, onExit);
     } else {
-        var command = command;
+        return ["failed", "", false];
     }
-
-    var output = "";
-
-    if ((OS_NAME === "windows" && IS_WSL_INSTALLED)) {
-        try {
-            output = cp.execSync(WSL_START_COMMAND + " " + command).toString();
-        } catch (error) {
-            return ["failed", (error as Error).message, rootPassword !== ""];
-        }
-    } else if (OS_NAME === "linux") {
-        try {
-            output = cp.execSync(command).toString();
-        } catch (error) {
-            return ["failed", (error as Error).message, rootPassword !== ""];
-        }
-    } else {
-        return ["failed", "", rootPassword !== ""];
-    }
-    return ["success", output, rootPassword !== ""];
 }

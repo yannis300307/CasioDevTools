@@ -5,7 +5,8 @@
 		"outDir": "out",
 		"lib": [
 			"ES2020",
-			"DOM"
+			"DOM",
+			"ES2021.String"
 		],
 		"sourceMap": true,
 		"rootDir": "src",

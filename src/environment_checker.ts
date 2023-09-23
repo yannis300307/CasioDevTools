@@ -26,7 +26,6 @@ export function getOS() {
  */
 export function getWslInstalled() {
     var checkMessage = "wsl is enabled and ready to use in casiodev";
-    var found = false;
     try {
         var wslCommand = cp.execSync("wsl echo " + checkMessage);
     } catch (_) { return false; }
@@ -47,6 +46,30 @@ export function getGiteapcInstalled() {
             var giteaVersion = cp.execSync("giteapc --version");
         } catch (_) { return false; }
         return giteaVersion.toString('utf8').includes("GiteaPC");
+    } else {
+        return false;
+    }
+}
+
+export function getRunningWslDistroName() {
+    if (IS_WSL_INSTALLED) {
+        var result = cp.execSync("wsl --list --running --quiet").toString('utf16le').split(" ")[0].replace("\n", "").replace("\r", "");
+        return result;
+    }
+    return "";
+}
+
+export function getFxsdkInstalled() {
+    if ((OS_NAME === "windows" && IS_WSL_INSTALLED)) {
+        try {
+            var fxsdkVersion = cp.execSync("wsl --shell-type login fxsdk --version");
+        } catch (_) { return false; }
+        return fxsdkVersion.toString('utf8').includes("fxSDK");
+    } else if (OS_NAME === "linux") {
+        try {
+            var fxsdkVersion = cp.execSync("fxsdk --version");
+        } catch (_) { return false; }
+        return fxsdkVersion.toString('utf8').includes("fxSDK");
     } else {
         return false;
     }
