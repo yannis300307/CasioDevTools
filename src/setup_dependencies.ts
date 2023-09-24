@@ -3,7 +3,7 @@ import { installFxsdk, installGiteapc } from './installations';
 import { InputBoxOptions } from 'vscode';
 import { logMessage, logWarn } from './utils';
 import { getFxsdkInstalled } from './environment_checker';
-import { INSTALLING_FXSDK, INSTALLING_GITEAPC, setFxsdkInstallingState, setGiteapcInstallingState } from './extension';
+import { setFxsdkInstallingState, setGiteapcInstallingState } from './extension';
 
 
 var lastLog = "";
