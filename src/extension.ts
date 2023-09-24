@@ -1,16 +1,17 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { getFxsdkInstalled, getGiteapcInstalled, getOS, getWslInstalled } from './environment_checker';
+import { getFxsdkInstalled, getGiteapcInstalled, getOS, getWSLExtensionInstalled, getWslInstalled } from './environment_checker';
 import { GiteaPCViewProvider } from "./gitepc_webview";
 import { logWarn } from './utils';
 import { FxsdkViewProvider } from './fxsdk_webview';
-import { startFxsdkInstallation, startGiteapcInstallation } from './setup_dependencies';
+import { installWSLExtension, startFxsdkInstallation, startGiteapcInstallation } from './setup_dependencies';
 
 export var OS_NAME: string;
 export var IS_WSL_INSTALLED: boolean;
 export var IS_GITEAPC_INSTALLED: boolean;
 export var IS_FXSDK_INSTALLED: boolean;
+export var IS_WSL_EXTENSION_INSTALLED: boolean;
 
 export var INSTALLING_FXSDK = false;
 export var INSTALLING_GITEAPC = false;
@@ -53,10 +54,13 @@ function checkEnvironment() {
 
 	IS_GITEAPC_INSTALLED = getGiteapcInstalled();
 	IS_FXSDK_INSTALLED = getFxsdkInstalled();
+	IS_WSL_EXTENSION_INSTALLED = getWSLExtensionInstalled(); // Imperatively after IS_WSL_INSTALLED
 
 	console.log("OS name ? " + OS_NAME);
 	console.log("Is wsl installed ? " + IS_WSL_INSTALLED);
 	console.log("Is GiteaPC installed ? " + IS_GITEAPC_INSTALLED);
+	console.log("Is WSL Extension installed ? " + IS_WSL_EXTENSION_INSTALLED);
+
 	if (vscode.workspace.workspaceFolders !== undefined) {
 		console.log("Current folder ? " + vscode.workspace.workspaceFolders[0].uri.fsPath);
 	} else {
@@ -73,6 +77,11 @@ function checkEnvironment() {
 			.showInformationMessage("Fxsdk is not installed on your system. Do you want to install it automaticaly?", "Yes", "No")
 			.then(answer => { IS_FXSDK_INSTALLED = startFxsdkInstallation(answer); });
 	}
+	if (!IS_WSL_EXTENSION_INSTALLED && IS_WSL_INSTALLED) {
+		vscode.window
+			.showInformationMessage("WSL Extension is not installed on your system. Do you want to install it automaticaly?", "Yes", "No")
+			.then(answer => { if (answer === "Yes") { installWSLExtension(); } });
+	}
 
 	console.log("CasioDevTools successfully started !");
 }
@@ -88,6 +97,14 @@ export function setGiteapcInstallingState(state: boolean) {
 	INSTALLING_GITEAPC = state;
 }
 
-export function getFxsdkInstallingState()  {
-	return INSTALLING_FXSDK;
+export function setFxsdkInstallState(state: boolean) {
+	IS_FXSDK_INSTALLED = state;
+}
+
+export function setGiteapcInstallState(state: boolean) {
+	IS_GITEAPC_INSTALLED = state;
+}
+
+export function setWSLExtensionInstallState(state: boolean) {
+	IS_WSL_EXTENSION_INSTALLED = state;
 }

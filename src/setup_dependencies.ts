@@ -3,7 +3,8 @@ import { installFxsdk, installGiteapc } from './installations';
 import { InputBoxOptions } from 'vscode';
 import { logMessage, logWarn } from './utils';
 import { getFxsdkInstalled } from './environment_checker';
-import { setFxsdkInstallingState, setGiteapcInstallingState } from './extension';
+import { IS_WSL_INSTALLED, setFxsdkInstallState, setFxsdkInstallingState, setGiteapcInstallState, setGiteapcInstallingState, setWSLExtensionInstallState } from './extension';
+import { ExecException, exec, execSync } from 'child_process';
 
 
 var lastLog = "";
@@ -32,6 +33,7 @@ export function startGiteapcInstallation(answer: string | undefined, retry = fal
 				logWarn('An error ocurred during the installation of GiteaPC : ' + result[1]);
 				if (result[2]) { startGiteapcInstallation("yes", true); }
 			} else if (result === "success") {
+				setGiteapcInstallState(true);
 				vscode.commands.executeCommand("casiodev.reloadgiteapcwebview");
 				vscode.window.showInformationMessage("GiteaPC is now ready to use on your system !");
 				return true;
@@ -74,6 +76,7 @@ function finishFxsdkInstallation() {
 	setFxsdkInstallingState(false);
 	if (getFxsdkInstalled()) {
 		logMessage("Fxsdk is now ready to use on your system!");
+		setFxsdkInstallState(true);
 		vscode.commands.executeCommand("casiodev.reloadfxsdkwebview");
 	} else {
 		logWarn("An error occured during the installation of Fxsdk!");
@@ -99,4 +102,12 @@ async function updateProgress(progress: vscode.Progress<{ message?: string | und
 	};
 
 	return new Promise(poll);
+}
+
+export function installWSLExtension() {
+	if (IS_WSL_INSTALLED) {
+		var output = execSync("powershell code --install-extension ms-vscode-remote.remote-wsl");
+		console.log(output.toString('utf-8'));
+		setWSLExtensionInstallState(true);
+	}
 }

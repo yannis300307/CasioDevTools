@@ -1,6 +1,7 @@
 import * as cp from 'child_process';
 import * as os from 'os';
 import { IS_WSL_INSTALLED, OS_NAME } from './extension';
+import * as vscode from 'vscode';
 
 
 /**
@@ -73,4 +74,11 @@ export function getFxsdkInstalled() {
     } else {
         return false;
     }
+}
+
+export function getWSLExtensionInstalled() {
+    if (IS_WSL_INSTALLED) {
+        return vscode.extensions.getExtension("ms-vscode-remote.remote-wsl") !== undefined;
+    }
+    return false;
 }
