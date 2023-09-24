@@ -187,6 +187,11 @@
                 vscode.postMessage({ type: 'search_lib', value: lib_name });
             });
 
+            document.querySelector('.install_giteapc_button').addEventListener('click', () => {
+                vscode.postMessage({ type: 'install_giteapc' });
+            });
+
+
             // Handle messages sent from the extension to the webview
             window.addEventListener('message', event => {
                 const message = event.data; // The json data that the extension sent
@@ -255,7 +260,7 @@
                 document.querySelector(".found_lib_list").innerHTML +=
                     `<li class="list_element">
                         <input type="radio" value=${value} name="lib_list" id="lib_name_${i}" class="list_element_input">
-                        <label for="lib_name_${i}" name="lib_list" class="btn btn-default"><div class="list_element_label_div"><p class="list_element_name">${value}</p><p class="installation_state">${installation_statut}</p></div></label>
+                        <label for="lib_name_${i}" name="lib_list" class="btn btn-default" title="${new_values[i]["description"]}"><div class="list_element_label_div"><p class="list_element_name">${value}</p><p class="installation_state">${installation_statut}</p></div></label>
                     </li>`;
 
                 console.log("Added " + value + " to list.");

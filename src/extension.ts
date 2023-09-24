@@ -12,6 +12,9 @@ export var IS_WSL_INSTALLED: boolean;
 export var IS_GITEAPC_INSTALLED: boolean;
 export var IS_FXSDK_INSTALLED: boolean;
 
+export var INSTALLING_FXSDK = false;
+export var INSTALLING_GITEAPC = false;
+
 
 export function activate(context: vscode.ExtensionContext) {
 	setupViews(context);
@@ -26,6 +29,14 @@ function setupViews(context: vscode.ExtensionContext) {
 	const fxsdkViewProvider = new FxsdkViewProvider(context.extensionUri);
 	context.subscriptions.push(
 		vscode.window.registerWebviewViewProvider(FxsdkViewProvider.viewType, fxsdkViewProvider));
+	
+	vscode.commands.registerCommand("casiodev.reloadgiteapcwebview", () => {
+		giteapcViewProvider.updateInstallation();
+	});
+
+	vscode.commands.registerCommand("casiodev.reloadfxsdkwebview", () => {
+		fxsdkViewProvider.updateInstallation();
+	});
 
 	console.log("Views successfully registered !");
 }
@@ -68,3 +79,15 @@ function checkEnvironment() {
 
 // This method is called when your extension is deactivated
 export function deactivate() { }
+
+export function setFxsdkInstallingState(state: boolean) {
+	INSTALLING_FXSDK = state;
+	console.log("FXSDK installing state is : " + INSTALLING_FXSDK);
+}
+export function setGiteapcInstallingState(state: boolean) {
+	INSTALLING_GITEAPC = state;
+}
+
+export function getFxsdkInstallingState()  {
+	return INSTALLING_FXSDK;
+}

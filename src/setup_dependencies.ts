@@ -3,12 +3,14 @@ import { installFxsdk, installGiteapc } from './installations';
 import { InputBoxOptions } from 'vscode';
 import { logMessage, logWarn } from './utils';
 import { getFxsdkInstalled } from './environment_checker';
+import { setFxsdkInstallingState, setGiteapcInstallingState } from './extension';
 
 
 var lastLog = "";
 var isLoading = false;
 
 export function startGiteapcInstallation(answer: string | undefined, retry = false) {
+	setGiteapcInstallingState(true);
 	if (answer === "Yes") {
 		if (retry) {
 			var inputPromt = "Bad password please retype it :";
@@ -26,20 +28,22 @@ export function startGiteapcInstallation(answer: string | undefined, retry = fal
 				var password = value;
 			}
 			var result = await installGiteapc(password);
-			startGiteapcInstallation("yes", true);
 			if (result[0] === "failed") {
 				logWarn('An error ocurred during the installation of GiteaPC : ' + result[1]);
 				if (result[2]) { startGiteapcInstallation("yes", true); }
 			} else if (result === "success") {
+				vscode.commands.executeCommand("casiodev.reloadgiteapcwebview");
 				vscode.window.showInformationMessage("GiteaPC is now ready to use on your system !");
 				return true;
 			}
+			setGiteapcInstallingState(false);
 		});
 	}
 	return false;
 }
 
 export function startFxsdkInstallation(answer: string | undefined, retry = false) {
+	setFxsdkInstallingState(true);
 	if (answer === "Yes") {
 		if (retry) {
 			var inputPromt = "Bad password please retype it :";
@@ -67,8 +71,10 @@ export function startFxsdkInstallation(answer: string | undefined, retry = false
 
 function finishFxsdkInstallation() {
 	isLoading = false;
+	setFxsdkInstallingState(false);
 	if (getFxsdkInstalled()) {
 		logMessage("Fxsdk is now ready to use on your system!");
+		vscode.commands.executeCommand("casiodev.reloadfxsdkwebview");
 	} else {
 		logWarn("An error occured during the installation of Fxsdk!");
 	}
