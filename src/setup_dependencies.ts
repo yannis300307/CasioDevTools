@@ -103,11 +103,3 @@ async function updateProgress(progress: vscode.Progress<{ message?: string | und
 
 	return new Promise(poll);
 }
-
-export function installWSLExtension() {
-	if (IS_WSL_INSTALLED) {
-		var output = execSync("powershell code --install-extension ms-vscode-remote.remote-wsl");
-		console.log(output.toString('utf-8'));
-		setWSLExtensionInstallState(true);
-	}
-}

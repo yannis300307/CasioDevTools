@@ -5,7 +5,7 @@ import { getFxsdkInstalled, getGiteapcInstalled, getOS, getWSLExtensionInstalled
 import { GiteaPCViewProvider } from "./gitepc_webview";
 import { logWarn } from './utils';
 import { FxsdkViewProvider } from './fxsdk_webview';
-import { installWSLExtension, startFxsdkInstallation, startGiteapcInstallation } from './setup_dependencies';
+import { startFxsdkInstallation, startGiteapcInstallation } from './setup_dependencies';
 
 export var OS_NAME: string;
 export var IS_WSL_INSTALLED: boolean;
@@ -76,11 +76,6 @@ function checkEnvironment() {
 		vscode.window
 			.showInformationMessage("Fxsdk is not installed on your system. Do you want to install it automaticaly?", "Yes", "No")
 			.then(answer => { IS_FXSDK_INSTALLED = startFxsdkInstallation(answer); });
-	}
-	if (!IS_WSL_EXTENSION_INSTALLED && IS_WSL_INSTALLED) {
-		vscode.window
-			.showInformationMessage("WSL Extension is not installed on your system. Do you want to install it automaticaly?", "Yes", "No")
-			.then(answer => { if (answer === "Yes") { installWSLExtension(); } });
 	}
 
 	console.log("CasioDevTools successfully started !");
