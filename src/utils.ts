@@ -1,8 +1,11 @@
 import * as vscode from 'vscode';
 
-var isLoading = false;
-var lastLog = "";
-var loadingsOptions: {[index: string]:{[index: string]: boolean | string}} = {};
+type LoadingOption = {
+	isLoading: boolean,
+	lastLog: string
+};
+
+var loadingsOptions: Record<string, LoadingOption> = {};
 
 
 export function logWarn(text: string) {
@@ -15,10 +18,11 @@ export function logMessage(text: string) {
 	console.log(text);
 }
 
-export function logLongLoading(title: string, id:string) {
-	isLoading = true;
-	loadingsOptions[id]["isLoading"] = true;
-	loadingsOptions[id]["lastLog"] = "";
+export function logLongLoading(title: string, id: string) {
+	loadingsOptions[id] = {
+		isLoading: true,
+		lastLog: ""
+	};
 	vscode.window.withProgress({
 		location: vscode.ProgressLocation.Notification,
 		cancellable: false,
@@ -37,9 +41,9 @@ export function setLoadingLastLog(id:string, log: string) {
 }
 
 async function updateProgress(progress: vscode.Progress<{ message?: string | undefined; increment?: number | undefined; }>, id: string) {
-	if (!loadingsOptions[id]["isLoading"]) { return; }
+	if (!loadingsOptions[id]["isLoading"]) { delete loadingsOptions[id]; return; }
 	const poll = (resolve: any) => {
-		if (!loadingsOptions[id]["isLoading"]) { resolve(); }
+		if (!loadingsOptions[id]["isLoading"]) { resolve(); delete loadingsOptions[id];} // remove options
 		else { setTimeout((_: any) => { poll(resolve); progress.report({ message: (loadingsOptions[id]["lastLog"] as string) }); }, 100); }
 	};
 

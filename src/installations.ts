@@ -53,7 +53,7 @@ export async function giteapcUninstallLib(libName: string) {
     } return ["failed", "", false];
 }
 
-function getGiteapcPath() {
+export function getGiteapcPath() {
     var result = executeCommand("echo $GITEAPC_HOME")[1].toString().replace("\n", "").replace("\r", "");
     if (result !== '') {
         return result;
@@ -66,6 +66,7 @@ function getGiteapcPath() {
     if (result !== '') {
         return result + "/.local/share/giteapc";
     }
+    return "";
 }
 
 function giteapcGetInstalledLibs() {

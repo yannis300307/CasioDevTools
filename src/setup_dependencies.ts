@@ -1,10 +1,11 @@
 import * as vscode from 'vscode';
 import { installFxsdk, installGiteapc } from './installations';
 import { InputBoxOptions } from 'vscode';
-import { logMessage, logWarn } from './utils';
+import { logLongLoading, logMessage, logWarn, setLoadingLastLog, setLoadingState } from './utils';
 import { getFxsdkInstalled } from './environment_checker';
 import { IS_WSL_INSTALLED, setFxsdkInstallState, setFxsdkInstallingState, setGiteapcInstallState, setGiteapcInstallingState, setWSLExtensionInstallState } from './extension';
 import { ExecException, exec, execSync } from 'child_process';
+import { updateHeadersFiles } from './WSL_utils';
 
 
 var lastLog = "";
@@ -102,4 +103,13 @@ async function updateProgress(progress: vscode.Progress<{ message?: string | und
 	};
 
 	return new Promise(poll);
+}
+
+export function updateHeadersFilesWithLog() {
+	logLongLoading("Updating Headers files", "headersUpdate");
+	updateHeadersFiles((log: string) => {
+		setLoadingLastLog("headersUpdate", log);
+	}, () => {
+		setLoadingState("headersUpdate", false);
+	});
 }

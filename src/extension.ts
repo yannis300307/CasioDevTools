@@ -5,7 +5,7 @@ import { getFxsdkInstalled, getGiteapcInstalled, getOS, getWSLExtensionInstalled
 import { GiteaPCViewProvider } from "./gitepc_webview";
 import { logWarn } from './utils';
 import { FxsdkViewProvider } from './fxsdk_webview';
-import { startFxsdkInstallation, startGiteapcInstallation } from './setup_dependencies';
+import { startFxsdkInstallation, startGiteapcInstallation, updateHeadersFilesWithLog } from './setup_dependencies';
 
 export var OS_NAME: string;
 export var IS_WSL_INSTALLED: boolean;
@@ -63,6 +63,7 @@ function checkEnvironment() {
 
 	if (vscode.workspace.workspaceFolders !== undefined) {
 		console.log("Current folder ? " + vscode.workspace.workspaceFolders[0].uri.fsPath);
+		updateHeadersFilesWithLog();
 	} else {
 		console.log("Current folder ? No opened folder");
 	}
