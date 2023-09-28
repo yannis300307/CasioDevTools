@@ -32,7 +32,7 @@ export function setLoadingState(id:string, state: boolean) {
 	loadingsOptions[id]["isLoading"] = state;
 }
 
-export function setLastLog(id:string, log: string) {
+export function setLoadingLastLog(id:string, log: string) {
 	loadingsOptions[id]["lastLog"] = log;
 }
 
