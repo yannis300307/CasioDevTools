@@ -3,8 +3,9 @@ import { installFxsdk, installGiteapc } from './installations';
 import { InputBoxOptions } from 'vscode';
 import { logLongLoading, logMessage, logWarn, setLoadingLastLog, setLoadingState } from './utils';
 import { getFxsdkInstalled } from './environment_checker';
-import { setFxsdkInstallState, setFxsdkInstallingState, setGiteapcInstallState, setGiteapcInstallingState, setWSLExtensionInstallState } from './extension';
+import { IS_WSL_INSTALLED, setFxsdkInstallState, setFxsdkInstallingState, setGiteapcInstallState, setGiteapcInstallingState, setWSLExtensionInstallState } from './extension';
 import { updateHeadersFiles } from './WSL_utils';
+import { execSync } from 'child_process';
 
 
 var lastLog = "";
@@ -114,4 +115,15 @@ export function updateHeadersFilesWithLog() {
 		setLoadingState("headersUpdate", false);
 		console.log("Headers update finished.");
 	});
+}
+
+export function installCCPPExtension() {
+		if (IS_WSL_INSTALLED) {
+			var output = execSync("powershell code --install-extension ms-vscode.cpptools");
+		} else {
+			var output = execSync("code --install-extension ms-vscode.cpptools");
+
+		}
+		console.log(output.toString('utf-8'));
+		setWSLExtensionInstallState(true);
 }
