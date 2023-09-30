@@ -1,17 +1,17 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { getFxsdkInstalled, getGiteapcInstalled, getOS, getWSLExtensionInstalled, getWslInstalled } from './environment_checker';
+import { getFxsdkInstalled, getGiteapcInstalled, getOS, getCCPPExtensionInstalled, getWslInstalled } from './environment_checker';
 import { GiteaPCViewProvider } from "./gitepc_webview";
 import { logWarn } from './utils';
 import { FxsdkViewProvider } from './fxsdk_webview';
-import { startFxsdkInstallation, startGiteapcInstallation, updateHeadersFilesWithLog } from './setup_dependencies';
+import { installCCPPExtension, startFxsdkInstallation, startGiteapcInstallation, updateHeadersFilesWithLog } from './setup_dependencies';
 
 export var OS_NAME: string;
 export var IS_WSL_INSTALLED: boolean;
 export var IS_GITEAPC_INSTALLED: boolean;
 export var IS_FXSDK_INSTALLED: boolean;
-export var IS_WSL_EXTENSION_INSTALLED: boolean;
+export var IS_CCPP_EXTENSION_INSTALLED: boolean;
 
 export var INSTALLING_FXSDK = false;
 export var INSTALLING_GITEAPC = false;
@@ -30,7 +30,7 @@ function setupViews(context: vscode.ExtensionContext) {
 	const fxsdkViewProvider = new FxsdkViewProvider(context.extensionUri);
 	context.subscriptions.push(
 		vscode.window.registerWebviewViewProvider(FxsdkViewProvider.viewType, fxsdkViewProvider));
-	
+
 	vscode.commands.registerCommand("casiodev.reloadgiteapcwebview", () => {
 		giteapcViewProvider.updateInstallation();
 	});
@@ -54,12 +54,12 @@ function checkEnvironment() {
 
 	IS_GITEAPC_INSTALLED = getGiteapcInstalled();
 	IS_FXSDK_INSTALLED = getFxsdkInstalled();
-	IS_WSL_EXTENSION_INSTALLED = getWSLExtensionInstalled(); // Imperatively after IS_WSL_INSTALLED
+	IS_CCPP_EXTENSION_INSTALLED = getCCPPExtensionInstalled(); // Imperatively after IS_WSL_INSTALLED
 
 	console.log("OS name ? " + OS_NAME);
 	console.log("Is wsl installed ? " + IS_WSL_INSTALLED);
 	console.log("Is GiteaPC installed ? " + IS_GITEAPC_INSTALLED);
-	console.log("Is WSL Extension installed ? " + IS_WSL_EXTENSION_INSTALLED);
+	console.log("Is C/C++ Extension installed ? " + IS_CCPP_EXTENSION_INSTALLED);
 
 	if (vscode.workspace.workspaceFolders !== undefined) {
 		console.log("Current folder ? " + vscode.workspace.workspaceFolders[0].uri.fsPath);
@@ -77,6 +77,11 @@ function checkEnvironment() {
 		vscode.window
 			.showInformationMessage("Fxsdk is not installed on your system. Do you want to install it automaticaly?", "Yes", "No")
 			.then(answer => { IS_FXSDK_INSTALLED = startFxsdkInstallation(answer); });
+	}
+	if (!IS_CCPP_EXTENSION_INSTALLED) {
+		vscode.window
+			.showInformationMessage("C/C++ Extension is not installed on your system. Do you want to install it automaticaly?", "Yes", "No")
+			.then(answer => { if (answer === "Yes") { installCCPPExtension(); } });
 	}
 
 	console.log("CasioDevTools successfully started !");
@@ -101,6 +106,6 @@ export function setGiteapcInstallState(state: boolean) {
 	IS_GITEAPC_INSTALLED = state;
 }
 
-export function setWSLExtensionInstallState(state: boolean) {
-	IS_WSL_EXTENSION_INSTALLED = state;
+export function setCCPPExtensionInstallState(state: boolean) {
+	IS_CCPP_EXTENSION_INSTALLED = state;
 }

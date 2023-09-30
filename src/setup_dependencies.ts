@@ -2,10 +2,10 @@ import * as vscode from 'vscode';
 import { installFxsdk, installGiteapc } from './installations';
 import { InputBoxOptions } from 'vscode';
 import { logLongLoading, logMessage, logWarn, setLoadingLastLog, setLoadingState } from './utils';
-import { getFxsdkInstalled } from './environment_checker';
-import { IS_WSL_INSTALLED, setFxsdkInstallState, setFxsdkInstallingState, setGiteapcInstallState, setGiteapcInstallingState, setWSLExtensionInstallState } from './extension';
+import { getCCPPExtensionInstalled, getFxsdkInstalled } from './environment_checker';
+import { IS_WSL_INSTALLED, setCCPPExtensionInstallState, setFxsdkInstallState, setFxsdkInstallingState, setGiteapcInstallState, setGiteapcInstallingState } from './extension';
 import { updateHeadersFiles } from './WSL_utils';
-import { execSync } from 'child_process';
+import { ExecException, exec, execSync } from 'child_process';
 
 
 var lastLog = "";
@@ -119,11 +119,9 @@ export function updateHeadersFilesWithLog() {
 
 export function installCCPPExtension() {
 		if (IS_WSL_INSTALLED) {
-			var output = execSync("powershell code --install-extension ms-vscode.cpptools");
+			var output = exec("powershell code --install-extension ms-vscode.cpptools", (error:ExecException | null) => {if (error !== null) {logWarn("An error occured during the installation of C/C++ Extension : " + error.message)} });
 		} else {
-			var output = execSync("code --install-extension ms-vscode.cpptools");
-
+			var output = exec("code --install-extension ms-vscode.cpptools");
 		}
-		console.log(output.toString('utf-8'));
-		setWSLExtensionInstallState(true);
+	setCCPPExtensionInstallState(getCCPPExtensionInstalled());
 }

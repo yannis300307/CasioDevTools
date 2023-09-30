@@ -76,9 +76,6 @@ export function getFxsdkInstalled() {
     }
 }
 
-export function getWSLExtensionInstalled() {
-    if (IS_WSL_INSTALLED) {
-        return vscode.extensions.getExtension("ms-vscode-remote.remote-wsl") !== undefined;
-    }
-    return false;
+export function getCCPPExtensionInstalled() {
+    return vscode.extensions.getExtension("ms-vscode.cpptools") !== undefined;
 }
