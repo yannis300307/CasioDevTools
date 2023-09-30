@@ -5,7 +5,9 @@ import { logLongLoading, logMessage, logWarn, setLoadingLastLog, setLoadingState
 import { getCCPPExtensionInstalled, getFxsdkInstalled } from './environment_checker';
 import { IS_WSL_INSTALLED, setCCPPExtensionInstallState, setFxsdkInstallState, setFxsdkInstallingState, setGiteapcInstallState, setGiteapcInstallingState } from './extension';
 import { updateHeadersFiles } from './WSL_utils';
-import { ExecException, exec, execSync } from 'child_process';
+import { ExecException, exec } from 'child_process';
+import { existsSync, mkdir, mkdirSync, writeFileSync } from 'fs';
+import { join } from 'path';
 
 
 var lastLog = "";
@@ -117,11 +119,75 @@ export function updateHeadersFilesWithLog() {
 	});
 }
 
-export function installCCPPExtension() {
-		if (IS_WSL_INSTALLED) {
-			var output = exec("powershell code --install-extension ms-vscode.cpptools", (error:ExecException | null) => {if (error !== null) {logWarn("An error occured during the installation of C/C++ Extension : " + error.message)} });
-		} else {
-			var output = exec("code --install-extension ms-vscode.cpptools");
+export function setupVSCodeSettings() {
+	const settingsContent = `{"C_Cpp.errorSquiggles": "disabled"}`;
+	if (vscode.workspace.workspaceFolders) {
+		const path = vscode.workspace.workspaceFolders[0].uri.fsPath;
+		if (!existsSync(join(path, ".vscode"))) {
+			mkdirSync(join(path, ".vscode"));
 		}
+		writeFileSync(join(path, ".vscode", "settings.json"), settingsContent);
+	}
+}
+
+export function setupCCPPSettings() {
+	const settingsContent = `{"configurations": [
+	{
+		"name": "CasioDev",
+		"includePath": [
+			"\${workspaceFolder}/**"
+		],
+		"defines": [
+			"_DEBUG",
+			"UNICODE",
+			"_UNICODE"
+		],
+		"cStandard": "c17",
+		"cppStandard": "c++17",
+		"intelliSenseMode": "linux-gcc-arm",
+		"compilerPath": ""
+	}
+],}`;
+	if (vscode.workspace.workspaceFolders) {
+		const path = vscode.workspace.workspaceFolders[0].uri.fsPath;
+		if (!existsSync(join(path, ".vscode"))) {
+			mkdirSync(join(path, ".vscode"));
+		}
+		writeFileSync(join(path, ".vscode", "c_cpp_properties.json"), settingsContent);
+	}
+}
+
+export function initCasioDevFolder() {
+	if (vscode.workspace.workspaceFolders) {
+		const path = vscode.workspace.workspaceFolders[0].uri.fsPath;
+		if (!existsSync(join(path, ".CasioDevFiles", ".lockCasioDev"))) {
+			lockCasioDevFolder();
+			setupVSCodeSettings();
+			setupCCPPSettings();
+		}
+	}
+}
+
+function lockCasioDevFolder() {
+	if (vscode.workspace.workspaceFolders) {
+		const path = vscode.workspace.workspaceFolders[0].uri.fsPath;
+		writeFileSync(join(path, ".CasioDevFiles", ".lockCasioDev"), "Casio Dev tools is already setup in this folder ! Have a good day !");
+	}
+}
+
+export function installCCPPExtension() {
+	var callback = (error: ExecException | null) => {
+		if (error !== null) {
+			logWarn("An error occured during the installation of C/C++ Extension : " + error.message);
+		} else {
+			logMessage("C/C++ Extension has been installed !");
+		}
+	};
+
+	if (IS_WSL_INSTALLED) {
+		exec("powershell code --install-extension ms-vscode.cpptools", callback);
+	} else {
+		exec("code --install-extension ms-vscode.cpptools", callback);
+	}
 	setCCPPExtensionInstallState(getCCPPExtensionInstalled());
 }

@@ -2,6 +2,7 @@ import { getWslPathFromWindows } from "./WSL_utils";
 import { executeCommand, executeCommandCallbackOnLog } from "./commands_util";
 import { IS_WSL_INSTALLED } from "./extension";
 import * as vscode from "vscode";
+import { setupCCPPSettings, setupVSCodeSettings } from "./setup_dependencies";
 
 export function compileCG(onLog: (log: string) => any, onExit: () => any) {
     var path;

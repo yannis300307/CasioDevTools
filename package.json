@@ -2,7 +2,7 @@
   "name": "casiodev",
   "displayName": "CasioDevTools",
   "description": "An extension adding useful tools for Casio calculators programming.",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "repository": "https://github.com/yannis300307/CasioDevTools",
   "icon": "resources/extension_icon.png",
   "engines": {
