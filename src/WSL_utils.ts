@@ -28,8 +28,9 @@ export async function updateHeadersFiles(onLog: (log:string) => any, onFinished:
 
         if (!fs.existsSync(path + "\\.CasioDevFiles")) { fs.mkdirSync(path + "\\.CasioDevFiles"); }
         if (!fs.existsSync(path + "\\.CasioDevFiles\\includes")) { fs.mkdirSync(path + "\\.CasioDevFiles\\includes"); }
-        var copyingProcess = cp.exec("xcopy \"" + giteapcPath + "\\*.h" + "\" \"" + path + "\\.CasioDevFiles\\includes\\\" /syd");
+        console.log("Updating headers files ...");
+        var copyingProcess = cp.exec("xcopy \"" + giteapcPath + "\\*.h" + "\" \"" + path + "\\.CasioDevFiles\\includes\\\" /syd & exit", onFinished);
         copyingProcess.stdout?.on("data", (log) => { onLog(log.replaceAll("\n", "").replaceAll("\r", "")); });
-        copyingProcess.once("exit", onFinished);
+        copyingProcess.once("close", onFinished);
     }
 }
