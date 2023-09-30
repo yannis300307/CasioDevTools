@@ -1,8 +1,9 @@
+import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { getWslPathFromWindows } from "./WSL_utils";
 import { executeCommand, executeCommandCallbackOnLog } from "./commands_util";
 import { IS_WSL_INSTALLED } from "./extension";
 import * as vscode from "vscode";
-import { setupCCPPSettings, setupVSCodeSettings } from "./setup_dependencies";
+import { join } from "path";
 
 export function compileCG(onLog: (log: string) => any, onExit: () => any) {
     var path;
@@ -32,4 +33,9 @@ export function compileFX(onLog: (log: string) => any, onExit: () => any) {
 export function createProject(dir: string, name: string) {
     console.log("dir: " + dir + " - name: " + name);
     executeCommand("cd \"" + dir + "\"; fxsdk new " + name.replaceAll(" ", "_"));
+}
+
+function preinitCasioDevProject(path: string) {
+    if (!existsSync(join(path, ".CasioDevFiles"))) { mkdirSync(join(path, ".CasioDevFiles")); }
+    writeFileSync(join(path, ".CasioDevFiles", ".CasioDevMarker"), "This project is a Casio Dev Tools project.");
 }
