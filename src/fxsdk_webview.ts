@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import * as vscode from 'vscode';
 import { logMessage } from './utils';
-import { compileCG, compileFX, createProject } from './fxsdk_manager';
+import { compileCG, compileFX, createProject, preinitCasioDevProject } from './fxsdk_manager';
 import { INSTALLING_FXSDK, IS_FXSDK_INSTALLED, IS_WSL_INSTALLED } from './extension';
 import { getWindowsPathFromWsl, getWslPathFromWindows } from './WSL_utils';
 import { startFxsdkInstallation } from './setup_dependencies';
@@ -88,6 +88,7 @@ export class FxsdkViewProvider implements vscode.WebviewViewProvider {
 								if (path === undefined) { return; }
 
 								createProject(pathParts.slice(0, pathParts.length - 1).join("/"), projectName);
+								preinitCasioDevProject(filePath.fsPath);
 
 								vscode.window.showInformationMessage("Your project \"" + projectName + "\" has successfully been created! Would you like to open it?", "Yes", "No").then(answer => {
 									if (answer === "Yes") {

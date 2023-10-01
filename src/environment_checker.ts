@@ -2,6 +2,8 @@ import * as cp from 'child_process';
 import * as os from 'os';
 import { IS_WSL_INSTALLED, OS_NAME } from './extension';
 import * as vscode from 'vscode';
+import { existsSync } from 'fs';
+import { join } from 'path';
 
 
 /**
@@ -78,4 +80,13 @@ export function getFxsdkInstalled() {
 
 export function getCCPPExtensionInstalled() {
     return vscode.extensions.getExtension("ms-vscode.cpptools") !== undefined;
+}
+
+export function getFolderIsCDTProject() {
+    if (vscode.workspace.workspaceFolders === undefined) { return false; }
+    var path = vscode.workspace.workspaceFolders[0].uri.fsPath;
+    if (existsSync(join(path, ".CasioDevFiles", ".CasioDevMarker"))) {
+        return true;
+    }
+    return false;
 }
