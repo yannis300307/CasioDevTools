@@ -4,6 +4,8 @@ import { executeCommand, executeCommandCallbackOnLog } from "./commands_util";
 import { IS_WSL_INSTALLED } from "./extension";
 import * as vscode from "vscode";
 import { join } from "path";
+import { initCasioDevFolder, updateHeadersFilesWithLog } from "./setup_dependencies";
+import { logMessage } from "./utils";
 
 export function compileCG(onLog: (log: string) => any, onExit: () => any) {
     var path;
@@ -37,4 +39,18 @@ export function createProject(dir: string, name: string) {
 export function preinitCasioDevProject(path: string) {
     if (!existsSync(join(path, ".CasioDevFiles"))) { mkdirSync(join(path, ".CasioDevFiles")); }
     writeFileSync(join(path, ".CasioDevFiles", ".CasioDevMarker"), "This project is a Casio Dev Tools project.");
+}
+
+export function setupCDTInCurrentFolder() {
+    if (vscode.workspace.workspaceFolders === undefined) { return; } 
+    const path = vscode.workspace.workspaceFolders[0].uri.fsPath;
+
+    preinitCasioDevProject(path);
+    initCasioDevFolder();
+    updateHeadersFilesWithLog();
+
+    vscode.commands.executeCommand("casiodev.reloadgiteapcwebview");
+    vscode.commands.executeCommand("casiodev.reloadfxsdkwebview");
+
+    logMessage("This folder is now a Casio Dev Tools project!");
 }

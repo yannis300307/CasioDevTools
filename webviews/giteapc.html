@@ -158,7 +158,7 @@
             outline : grey;
         }
 
-        .install_giteapc_button {
+        .centered_button {
             width: 60%;
             display: block;
             float: center;
@@ -191,6 +191,10 @@
                 vscode.postMessage({ type: 'install_giteapc' });
             });
 
+            document.querySelector('.setup_CDT').addEventListener('click', () => {
+                vscode.postMessage({ type: 'setup_CDT' });
+            });
+
 
             // Handle messages sent from the extension to the webview
             window.addEventListener('message', event => {
@@ -205,9 +209,18 @@
                     {
                         document.querySelector("#main").hidden = false;
                         document.querySelector("#unavailable").hidden = true;
+                        document.querySelector("#not_CDT_project").hidden = true;
                         console.log("Unlocked GiteaPC webview !")
                         break;
                     }
+                    case 'lock_not_CDT_Project':
+                        {
+                            document.querySelector("#main").hidden = true;
+                            document.querySelector("#unavailable").hidden = true;
+                            document.querySelector("#not_CDT_project").hidden = false;
+                            console.log("CDT is not setup in this folder !")
+                            break;
+                        }
                 }
             });
             // Send a message to the webview provider to unlock the webview if GiteaPC is installed.
@@ -307,7 +320,11 @@
     </div>
     <div id="unavailable">
         <p>GiteaPC seems to be not installed on your computer ...</p>
-        <button class="base_button install_giteapc_button">Install GiteaPC automaticaly</button>
+        <button class="base_button install_giteapc_button centered_button">Install GiteaPC automaticaly</button>
+    </div>
+    <div id="not_CDT_project" hidden>
+        <p>This folder is not a Casio Dev Tools project. You can mark it as a CDT project. (It will setup CDT dependencies is the current folder)<p>
+            <button class="base_button setup_CDT centered_button">Setup CDT in this folder</button>
     </div>
 </body>
 

@@ -51,6 +51,10 @@
                 vscode.postMessage({ type: 'install_fxsdk' });
             });
 
+            document.querySelector('.setup_CDT').addEventListener('click', () => {
+                vscode.postMessage({ type: 'setup_CDT' });
+            });
+
 
             window.addEventListener('message', event => {
                 const message = event.data; // The json data that the extension sent
@@ -59,7 +63,16 @@
                         {
                             document.querySelector("#main").hidden = false;
                             document.querySelector("#unavailable").hidden = true;
+                            document.querySelector("#not_CDT_project").hidden = true;
                             console.log("Unlocked Fxsdk webview !")
+                            break;
+                        }
+                        case 'lock_not_CDT_Project':
+                        {
+                            document.querySelector("#main").hidden = true;
+                            document.querySelector("#unavailable").hidden = true;
+                            document.querySelector("#not_CDT_project").hidden = false;
+                            console.log("CDT is not setup in this folder !")
                             break;
                         }
                 }
@@ -84,6 +97,10 @@
     <div id="unavailable">
         <p>Fxsdk seems to be not installed on your computer ...</p>
         <button class="base_button install_fxsdk_button">Install Fxsdk automaticaly</button>
+    </div>
+    <div id="not_CDT_project" hidden>
+        <p>This folder is not a Casio Dev Tools project. You can mark it as a CDT project. (It will setup CDT dependencies is the current folder)<p>
+            <button class="base_button setup_CDT">Setup CDT in this folder</button>
     </div>
 
 </body>
