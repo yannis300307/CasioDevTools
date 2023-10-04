@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 import { giteapcGetLibsList, giteapcInstallLib, giteapcUninstallLib } from './installations';
 import { logMessage, logWarn } from './utils';
 import { INSTALLING_GITEAPC, IS_CDT_PROJECT, IS_GITEAPC_INSTALLED } from './extension';
-import { startGiteapcInstallation } from './setup_dependencies';
+import { startGiteapcInstallation, updateHeadersFilesWithLog } from './setup_dependencies';
 import { setupCDTInCurrentFolder } from './fxsdk_manager';
 
 export class GiteaPCViewProvider implements vscode.WebviewViewProvider {
@@ -54,6 +54,7 @@ export class GiteaPCViewProvider implements vscode.WebviewViewProvider {
 						} else if (result[0] === "success") {
 							logMessage('"' + data.value + '" has been installed !');
 							this.updateLibsList(data.search_bar_value);
+							updateHeadersFilesWithLog();
 						}
 						break;
 					}
