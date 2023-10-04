@@ -110,8 +110,11 @@ export class GiteaPCViewProvider implements vscode.WebviewViewProvider {
 	}
 
 	public updateInstallation() {
-		if (IS_GITEAPC_INSTALLED) {
+		console.log("Checking if the GiteaPC view can be unlocked ...");
+		if (IS_GITEAPC_INSTALLED && IS_CDT_PROJECT) {
 			this._view?.webview.postMessage({ type: 'unlock' });
+		} else if (!IS_CDT_PROJECT) {
+			this._view?.webview.postMessage({ type: 'lock_not_CDT_Project' });
 		}
 	}
 }

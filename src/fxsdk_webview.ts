@@ -139,8 +139,11 @@ export class FxsdkViewProvider implements vscode.WebviewViewProvider {
 	}
 
 	public updateInstallation() {
-		if (IS_FXSDK_INSTALLED) {
+		console.log("Checking if the FXSDK view can be unlocked ...");
+		if (IS_FXSDK_INSTALLED && IS_CDT_PROJECT) {
 			this._view?.webview.postMessage({ type: 'unlock' });
+		} else if (!IS_CDT_PROJECT) {
+			this._view?.webview.postMessage({ type: 'lock_not_CDT_Project' });
 		}
 	}
 }
