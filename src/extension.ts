@@ -117,3 +117,7 @@ export function setGiteapcInstallState(state: boolean) {
 export function setCCPPExtensionInstallState(state: boolean) {
 	IS_CCPP_EXTENSION_INSTALLED = state;
 }
+
+export function setIsCDTProjectState(state: boolean) {
+	IS_CDT_PROJECT = state;
+}

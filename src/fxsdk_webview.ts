@@ -2,9 +2,10 @@ import { readFileSync } from 'fs';
 import * as vscode from 'vscode';
 import { logMessage } from './utils';
 import { compileCG, compileFX, createProject, preinitCasioDevProject, setupCDTInCurrentFolder } from './fxsdk_manager';
-import { INSTALLING_FXSDK, IS_CDT_PROJECT, IS_FXSDK_INSTALLED, IS_WSL_INSTALLED } from './extension';
+import { INSTALLING_FXSDK, IS_CDT_PROJECT, IS_FXSDK_INSTALLED, IS_WSL_INSTALLED, setIsCDTProjectState } from './extension';
 import { getWindowsPathFromWsl, getWslPathFromWindows } from './WSL_utils';
 import { startFxsdkInstallation } from './setup_dependencies';
+import { getFolderIsCDTProject } from './environment_checker';
 
 
 var isLoading = false;
@@ -42,9 +43,11 @@ export class FxsdkViewProvider implements vscode.WebviewViewProvider {
 				case "check_for_fxsdk_installed":
 					{
 						console.log("Checking if the FXSDK view can be unlocked ...");
-						if (IS_FXSDK_INSTALLED && IS_CDT_PROJECT) {
+						if (IS_FXSDK_INSTALLED) {
 							this._view?.webview.postMessage({ type: 'unlock' });
-						} else if (!IS_CDT_PROJECT) {
+						} 
+						setIsCDTProjectState(getFolderIsCDTProject());
+						if (!IS_CDT_PROJECT) {
 							this._view?.webview.postMessage({ type: 'lock_not_CDT_Project' });
 						}
 						break;

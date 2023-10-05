@@ -2,7 +2,7 @@ import { readFileSync } from 'fs';
 import * as vscode from 'vscode';
 import { giteapcGetLibsList, giteapcInstallLib, giteapcUninstallLib } from './installations';
 import { logMessage, logWarn } from './utils';
-import { INSTALLING_GITEAPC, IS_CDT_PROJECT, IS_GITEAPC_INSTALLED } from './extension';
+import { INSTALLING_GITEAPC, IS_GITEAPC_INSTALLED } from './extension';
 import { startGiteapcInstallation, updateHeadersFilesWithLog } from './setup_dependencies';
 import { setupCDTInCurrentFolder } from './fxsdk_manager';
 
@@ -38,10 +38,8 @@ export class GiteaPCViewProvider implements vscode.WebviewViewProvider {
 				case "check_for_giteapc_installed":
 					{
 						console.log("Checking if the GiteaPC view can be unlocked ...");
-						if (IS_GITEAPC_INSTALLED && IS_CDT_PROJECT) {
+						if (IS_GITEAPC_INSTALLED) {
 							this._view?.webview.postMessage({ type: 'unlock' });
-						} else if (!IS_CDT_PROJECT) {
-							this._view?.webview.postMessage({ type: 'lock_not_CDT_Project' });
 						}
 						break;
 					}
@@ -111,10 +109,8 @@ export class GiteaPCViewProvider implements vscode.WebviewViewProvider {
 
 	public updateInstallation() {
 		console.log("Checking if the GiteaPC view can be unlocked ...");
-		if (IS_GITEAPC_INSTALLED && IS_CDT_PROJECT) {
+		if (IS_GITEAPC_INSTALLED) {
 			this._view?.webview.postMessage({ type: 'unlock' });
-		} else if (!IS_CDT_PROJECT) {
-			this._view?.webview.postMessage({ type: 'lock_not_CDT_Project' });
 		}
 	}
 }

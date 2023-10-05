@@ -1,9 +1,9 @@
 import * as vscode from 'vscode';
-import { installFxsdk, installGiteapc } from './installations';
+import { getGiteapcPath, installFxsdk, installGiteapc } from './installations';
 import { InputBoxOptions } from 'vscode';
 import { logLongLoading, logMessage, logWarn, setLoadingLastLog, setLoadingState } from './utils';
 import { getCCPPExtensionInstalled, getFxsdkInstalled } from './environment_checker';
-import { IS_WSL_INSTALLED, setCCPPExtensionInstallState, setFxsdkInstallState, setFxsdkInstallingState, setGiteapcInstallState, setGiteapcInstallingState } from './extension';
+import { IS_WSL_INSTALLED, OS_NAME, setCCPPExtensionInstallState, setFxsdkInstallState, setFxsdkInstallingState, setGiteapcInstallState, setGiteapcInstallingState, setIsCDTProjectState } from './extension';
 import { updateHeadersFiles } from './WSL_utils';
 import { ExecException, exec } from 'child_process';
 import { existsSync, mkdir, mkdirSync, writeFileSync } from 'fs';
@@ -131,7 +131,9 @@ export function setupVSCodeSettings() {
 }
 
 export function setupCCPPSettings() {
-	const settingsContent = `{"configurations": [
+	var settingsContent;
+	if (OS_NAME === "windows") {
+		settingsContent = `{"configurations": [
 	{
 		"name": "CasioDev",
 		"includePath": [
@@ -148,6 +150,27 @@ export function setupCCPPSettings() {
 		"compilerPath": ""
 	}
 ],}`;
+	} else {
+		const path = getGiteapcPath();
+		settingsContent = `{"configurations": [
+	{
+		"name": "CasioDev",
+		"includePath": [
+			"\${workspaceFolder}/**",
+			"${path}"
+		],
+		"defines": [
+			"_DEBUG",
+			"UNICODE",
+			"_UNICODE"
+		],
+		"cStandard": "c17",
+		"cppStandard": "c++17",
+		"intelliSenseMode": "linux-gcc-arm",
+		"compilerPath": ""
+	}
+],}`;
+	}
 	if (vscode.workspace.workspaceFolders) {
 		const path = vscode.workspace.workspaceFolders[0].uri.fsPath;
 		if (!existsSync(join(path, ".vscode"))) {
@@ -165,6 +188,7 @@ export function initCasioDevFolder() {
 			setupVSCodeSettings();
 			setupCCPPSettings();
 		}
+		setIsCDTProjectState(true);
 	}
 }
 

@@ -62,14 +62,16 @@
                     case 'unlock':
                         {
                             document.querySelector("#main").hidden = false;
+                            document.querySelector(".need_CDT_project").hidden = false
                             document.querySelector("#unavailable").hidden = true;
                             document.querySelector("#not_CDT_project").hidden = true;
                             console.log("Unlocked Fxsdk webview !")
                             break;
                         }
-                        case 'lock_not_CDT_Project':
+                    case 'lock_not_CDT_Project':
                         {
-                            document.querySelector("#main").hidden = true;
+                            document.querySelector("#main").hidden = false;
+                            document.querySelector(".need_CDT_project").hidden = true
                             document.querySelector("#unavailable").hidden = true;
                             document.querySelector("#not_CDT_project").hidden = false;
                             console.log("CDT is not setup in this folder !")
@@ -88,19 +90,20 @@
 
     <div id="main" hidden>
         <h3>Compilation:</h3>
-        <button id="CG_button" class="compile_button base_button">Compile for CG</button>
-        <button id="FX_button" class="compile_button base_button">Compile for FX</button>
-
+        <div class="need_CDT_project">
+            <button id="CG_button" class="compile_button base_button">Compile for CG</button>
+            <button id="FX_button" class="compile_button base_button">Compile for FX</button>
+        </div>
+        <div id="not_CDT_project" hidden>
+            <p>This folder is not a Casio Dev Tools project. You can mark it as a CDT project. (It will setup CDT dependencies is the current folder)<p>
+                <button class="base_button setup_CDT">Setup CDT in this folder</button>
+        </div>
         <h3>Project Management:</h3>
         <button id="create_project" class="base_button">Create a new project</button>
     </div>
     <div id="unavailable">
         <p>Fxsdk seems to be not installed on your computer ...</p>
         <button class="base_button install_fxsdk_button">Install Fxsdk automaticaly</button>
-    </div>
-    <div id="not_CDT_project" hidden>
-        <p>This folder is not a Casio Dev Tools project. You can mark it as a CDT project. (It will setup CDT dependencies is the current folder)<p>
-            <button class="base_button setup_CDT">Setup CDT in this folder</button>
     </div>
 
 </body>
