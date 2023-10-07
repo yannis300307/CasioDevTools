@@ -3,7 +3,8 @@ import * as vscode from 'vscode';
 import { giteapcGetLibsList, giteapcInstallLib, giteapcUninstallLib } from './installations';
 import { logMessage, logWarn } from './utils';
 import { INSTALLING_GITEAPC, IS_GITEAPC_INSTALLED } from './extension';
-import { startGiteapcInstallation } from './setup_dependencies';
+import { startGiteapcInstallation, updateHeadersFilesWithLog } from './setup_dependencies';
+import { setupCDTInCurrentFolder } from './fxsdk_manager';
 
 export class GiteaPCViewProvider implements vscode.WebviewViewProvider {
 	public static readonly viewType = 'casiodev.giteapc';
@@ -51,6 +52,7 @@ export class GiteaPCViewProvider implements vscode.WebviewViewProvider {
 						} else if (result[0] === "success") {
 							logMessage('"' + data.value + '" has been installed !');
 							this.updateLibsList(data.search_bar_value);
+							updateHeadersFilesWithLog();
 						}
 						break;
 					}
@@ -74,12 +76,16 @@ export class GiteaPCViewProvider implements vscode.WebviewViewProvider {
 					}
 				case 'install_giteapc':
 					{
-						if (!INSTALLING_GITEAPC)
-						{
+						if (!INSTALLING_GITEAPC) {
 							startGiteapcInstallation("yes", false);
 						}
-					break;
-				}
+						break;
+					}
+				case 'setup_CDT':
+					{
+						setupCDTInCurrentFolder();
+						break;
+					}
 			}
 		});
 
@@ -102,6 +108,7 @@ export class GiteaPCViewProvider implements vscode.WebviewViewProvider {
 	}
 
 	public updateInstallation() {
+		console.log("Checking if the GiteaPC view can be unlocked ...");
 		if (IS_GITEAPC_INSTALLED) {
 			this._view?.webview.postMessage({ type: 'unlock' });
 		}

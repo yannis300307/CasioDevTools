@@ -1,10 +1,11 @@
 import { readFileSync } from 'fs';
 import * as vscode from 'vscode';
 import { logMessage } from './utils';
-import { compileCG, compileFX, createProject } from './fxsdk_manager';
-import { INSTALLING_FXSDK, IS_FXSDK_INSTALLED, IS_WSL_INSTALLED } from './extension';
+import { compileCG, compileFX, createProject, preinitCasioDevProject, setupCDTInCurrentFolder } from './fxsdk_manager';
+import { INSTALLING_FXSDK, IS_CDT_PROJECT, IS_FXSDK_INSTALLED, IS_WSL_INSTALLED, setIsCDTProjectState } from './extension';
 import { getWindowsPathFromWsl, getWslPathFromWindows } from './WSL_utils';
 import { startFxsdkInstallation } from './setup_dependencies';
+import { getFolderIsCDTProject } from './environment_checker';
 
 
 var isLoading = false;
@@ -44,6 +45,10 @@ export class FxsdkViewProvider implements vscode.WebviewViewProvider {
 						console.log("Checking if the FXSDK view can be unlocked ...");
 						if (IS_FXSDK_INSTALLED) {
 							this._view?.webview.postMessage({ type: 'unlock' });
+						} 
+						setIsCDTProjectState(getFolderIsCDTProject());
+						if (!IS_CDT_PROJECT) {
+							this._view?.webview.postMessage({ type: 'lock_not_CDT_Project' });
 						}
 						break;
 					}
@@ -88,6 +93,7 @@ export class FxsdkViewProvider implements vscode.WebviewViewProvider {
 								if (path === undefined) { return; }
 
 								createProject(pathParts.slice(0, pathParts.length - 1).join("/"), projectName);
+								preinitCasioDevProject(filePath.fsPath);
 
 								vscode.window.showInformationMessage("Your project \"" + projectName + "\" has successfully been created! Would you like to open it?", "Yes", "No").then(answer => {
 									if (answer === "Yes") {
@@ -112,6 +118,11 @@ export class FxsdkViewProvider implements vscode.WebviewViewProvider {
 						}
 						break;
 					}
+				case 'setup_CDT':
+					{
+						setupCDTInCurrentFolder();
+						break;
+					}
 
 			}
 		});
@@ -131,8 +142,11 @@ export class FxsdkViewProvider implements vscode.WebviewViewProvider {
 	}
 
 	public updateInstallation() {
-		if (IS_FXSDK_INSTALLED) {
+		console.log("Checking if the FXSDK view can be unlocked ...");
+		if (IS_FXSDK_INSTALLED && IS_CDT_PROJECT) {
 			this._view?.webview.postMessage({ type: 'unlock' });
+		} else if (!IS_CDT_PROJECT) {
+			this._view?.webview.postMessage({ type: 'lock_not_CDT_Project' });
 		}
 	}
 }
