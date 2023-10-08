@@ -6,6 +6,7 @@ import { GiteaPCViewProvider } from "./gitepc_webview";
 import { logWarn } from './utils';
 import { FxsdkViewProvider } from './fxsdk_webview';
 import { initCasioDevFolder, installCCPPExtension, startFxsdkInstallation, startGiteapcInstallation, updateHeadersFilesWithLog } from './setup_dependencies';
+import { EmulTransViewProvider } from './emul_transfert_webview';
 
 export var OS_NAME: string;
 export var IS_WSL_INSTALLED: boolean;
@@ -31,6 +32,10 @@ function setupViews(context: vscode.ExtensionContext) {
 	const fxsdkViewProvider = new FxsdkViewProvider(context.extensionUri);
 	context.subscriptions.push(
 		vscode.window.registerWebviewViewProvider(FxsdkViewProvider.viewType, fxsdkViewProvider));
+
+	const emulTransViewProvider = new EmulTransViewProvider(context.extensionUri);
+	context.subscriptions.push(
+		vscode.window.registerWebviewViewProvider(EmulTransViewProvider.viewType, emulTransViewProvider));
 
 	vscode.commands.registerCommand("casiodev.reloadgiteapcwebview", () => {
 		giteapcViewProvider.updateInstallation();

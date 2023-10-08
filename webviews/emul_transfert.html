@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        .title {
+            text-align: center;
+        }
+
+        .base_button {
+            display: block;
+            border: none;
+            height: 2em;
+            width: 60%;
+            background: var(--vscode-button-background);
+            color: white;
+            border-radius: 0.2em;
+            outline-color: var(--vscode-button-border);
+            margin-top: 1em;
+            margin-bottom: 1em;
+            margin-right: auto;
+            margin-left: auto;
+            float: center;
+        }
+
+        .base_button:hover {
+            background: var(--vscode-button-hoverBackground);
+        }
+
+        .base_button:active {
+            outline: double var(--vscode-button-hoverBackground);
+        }
+    </style>
+    <script>
+        window.addEventListener('load', function () {
+            const vscode = acquireVsCodeApi();
+
+            console.log("working !");
+
+            document.querySelector('#CG_button').addEventListener('click', () => {
+                vscode.postMessage({ type: 'compile_cg' });
+            });
+            document.querySelector('#FX_button').addEventListener('click', () => {
+                vscode.postMessage({ type: 'compile_fx' });
+            });
+            document.querySelector('#create_project').addEventListener('click', () => {
+                vscode.postMessage({ type: 'create_project' });
+            });
+
+            document.querySelector('.install_fxsdk_button').addEventListener('click', () => {
+                vscode.postMessage({ type: 'install_fxsdk' });
+            });
+
+            document.querySelector('.setup_CDT').addEventListener('click', () => {
+                vscode.postMessage({ type: 'setup_CDT' });
+            });
+
+
+            window.addEventListener('message', event => {
+                const message = event.data; // The json data that the extension sent
+                switch (message.type) {
+                    case 'unlock':
+                        {
+                            document.querySelector("#main").hidden = false;
+                            document.querySelector(".need_CDT_project").hidden = false
+                            document.querySelector("#unavailable").hidden = true;
+                            document.querySelector("#not_CDT_project").hidden = true;
+                            console.log("Unlocked Fxsdk webview !")
+                            break;
+                        }
+                    case 'lock_not_CDT_Project':
+                        {
+                            document.querySelector("#main").hidden = false;
+                            document.querySelector(".need_CDT_project").hidden = true
+                            document.querySelector("#unavailable").hidden = true;
+                            document.querySelector("#not_CDT_project").hidden = false;
+                            console.log("CDT is not setup in this folder !")
+                            break;
+                        }
+                }
+            });
+            // Send a message to the webview provider to unlock the webview if FXSDK is installed.
+            vscode.postMessage({ type: 'check_for_fxsdk_installed' });
+        });
+    </script>
+</head>
+
+<body>
+    <h2 class="title">Emulate and Transfert</h2>
+
+    <div id="main" hidden>
+        <h3>Compilation:</h3>
+        <div class="need_CDT_project">
+            <button id="CG_button" class="compile_button base_button">Compile for CG</button>
+            <button id="FX_button" class="compile_button base_button">Compile for FX</button>
+        </div>
+        <div id="not_CDT_project" hidden>
+            <p>This folder is not a Casio Dev Tools project. You can mark it as a CDT project. (It will setup CDT dependencies is the current folder)<p>
+                <button class="base_button setup_CDT">Setup CDT in this folder</button>
+        </div>
+        <h3>Project Management:</h3>
+        <button id="create_project" class="base_button">Create a new project</button>
+    </div>
+    <div id="unavailable">
+        <p>Fxsdk seems to be not installed on your computer ...</p>
+        <button class="base_button install_fxsdk_button">Install Fxsdk automaticaly</button>
+    </div>
+
+</body>
+
+</html>

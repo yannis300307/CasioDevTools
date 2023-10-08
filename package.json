@@ -48,6 +48,11 @@
           "type": "webview",
           "id": "casiodv.fxsdk",
           "name": "Fxsdk Compile And Manage Projects"
+        },
+        {
+          "type": "webview",
+          "id": "casiodev.emul_transfert",
+          "name": "Emulator and transfert"
         }
       ]
     }
