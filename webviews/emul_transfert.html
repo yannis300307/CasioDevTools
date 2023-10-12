@@ -30,6 +30,35 @@
         .base_button:active {
             outline: double var(--vscode-button-hoverBackground);
         }
+
+        .start_emul_container button,
+        select {
+            background-color: var(--vscode-input-background);
+            border: 1px var(--vscode-input-border);
+            outline: 1px solid var(--vscode-input-border);
+            border-radius: 0px;
+            color: var(--vscode-input-foreground);
+            margin: 0px;
+            height:1.8em;
+        }
+
+        #emul_acion {
+            width:20em;
+        }
+
+        #emul_action_list:focus {
+            outline: 1px solid var(--vscode-inputOption-activeBorder);
+        }
+
+        #emul_button {
+            color: #89d185;
+            font-weight: bold;
+        }
+
+        #emul_button:active {
+            outline: double var(--vscode-input-border);
+        }
+
     </style>
     <script>
         window.addEventListener('load', function () {
@@ -37,23 +66,18 @@
 
             console.log("working !");
 
-            document.querySelector('#CG_button').addEventListener('click', () => {
-                vscode.postMessage({ type: 'compile_cg' });
-            });
-            document.querySelector('#FX_button').addEventListener('click', () => {
-                vscode.postMessage({ type: 'compile_fx' });
-            });
             document.querySelector('#create_project').addEventListener('click', () => {
                 vscode.postMessage({ type: 'create_project' });
             });
 
-            document.querySelector('.install_fxsdk_button').addEventListener('click', () => {
+            /*document.querySelector('.install_emulator_button').addEventListener('click', () => {
                 vscode.postMessage({ type: 'install_fxsdk' });
-            });
+            });*/
 
-            document.querySelector('.setup_CDT').addEventListener('click', () => {
-                vscode.postMessage({ type: 'setup_CDT' });
-            });
+            document.querySelector('#emul_button').addEventListener('click', ()=> {
+                console.log(document.getElementById('emul_action_list').value);
+                
+            })
 
 
             window.addEventListener('message', event => {
@@ -61,26 +85,15 @@
                 switch (message.type) {
                     case 'unlock':
                         {
-                            document.querySelector("#main").hidden = false;
-                            document.querySelector(".need_CDT_project").hidden = false
+                            document.querySelector("#need_emulator").hidden = false;
                             document.querySelector("#unavailable").hidden = true;
-                            document.querySelector("#not_CDT_project").hidden = true;
-                            console.log("Unlocked Fxsdk webview !")
-                            break;
-                        }
-                    case 'lock_not_CDT_Project':
-                        {
-                            document.querySelector("#main").hidden = false;
-                            document.querySelector(".need_CDT_project").hidden = true
-                            document.querySelector("#unavailable").hidden = true;
-                            document.querySelector("#not_CDT_project").hidden = false;
-                            console.log("CDT is not setup in this folder !")
+                            console.log("Unlocked Emulator webview !")
                             break;
                         }
                 }
             });
-            // Send a message to the webview provider to unlock the webview if FXSDK is installed.
-            vscode.postMessage({ type: 'check_for_fxsdk_installed' });
+            // Send a message to the webview provider to unlock the webview if The Emulator is installed.
+            vscode.postMessage({ type: 'check_for_emulator_installed' });
         });
     </script>
 </head>
@@ -88,23 +101,21 @@
 <body>
     <h2 class="title">Emulate and Transfert</h2>
 
-    <div id="main" hidden>
-        <h3>Compilation:</h3>
-        <div class="need_CDT_project">
-            <button id="CG_button" class="compile_button base_button">Compile for CG</button>
-            <button id="FX_button" class="compile_button base_button">Compile for FX</button>
+    <div id="main">
+        <h3>Emulator:</h3>
+        <div class="need_emulator" hidden>
+            <button id="emu_button" class="start_emu_button base_button">Launch CG-50 / Graph90+e emulator</button>
         </div>
-        <div id="not_CDT_project" hidden>
-            <p>This folder is not a Casio Dev Tools project. You can mark it as a CDT project. (It will setup CDT dependencies is the current folder)<p>
-                <button class="base_button setup_CDT">Setup CDT in this folder</button>
+        <div class="start_emul_container">
+            <button id="emul_button">▷</button><select name="thelist" id="emul_action_list">
+                <option value="0">Run Emulator</option>
+                <option value="1">Compile and run</option>
+            </select>
         </div>
-        <h3>Project Management:</h3>
-        <button id="create_project" class="base_button">Create a new project</button>
+        <h3>Transfert to Calculator:</h3>
+        <button id="create_project" class="base_button">Transfert with copy</button>
     </div>
-    <div id="unavailable">
-        <p>Fxsdk seems to be not installed on your computer ...</p>
-        <button class="base_button install_fxsdk_button">Install Fxsdk automaticaly</button>
-    </div>
+
 
 </body>
 
