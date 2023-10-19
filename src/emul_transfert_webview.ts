@@ -46,10 +46,6 @@ export class EmulTransViewProvider implements vscode.WebviewViewProvider {
 						if (IS_FXSDK_INSTALLED) {
 							this._view?.webview.postMessage({ type: 'unlock' });
 						} 
-						setIsCDTProjectState(getFolderIsCDTProject());
-						if (!IS_CDT_PROJECT) {
-							this._view?.webview.postMessage({ type: 'lock_not_CDT_Project' });
-						}
 						break;
 					}
 				case 'install_emulator':
@@ -60,9 +56,9 @@ export class EmulTransViewProvider implements vscode.WebviewViewProvider {
 						}
 						break;
 					}
-				case 'setup_CDT':
+				case 'start_emulator':
 					{
-						setupCDTInCurrentFolder();
+						
 						break;
 					}
 

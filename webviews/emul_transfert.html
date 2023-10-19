@@ -39,11 +39,11 @@
             border-radius: 0px;
             color: var(--vscode-input-foreground);
             margin: 0px;
-            height:1.8em;
+            height: 1.8em;
         }
 
         #emul_acion {
-            width:20em;
+            width: 20em;
         }
 
         #emul_action_list:focus {
@@ -58,7 +58,6 @@
         #emul_button:active {
             outline: double var(--vscode-input-border);
         }
-
     </style>
     <script>
         window.addEventListener('load', function () {
@@ -74,9 +73,21 @@
                 vscode.postMessage({ type: 'install_fxsdk' });
             });*/
 
-            document.querySelector('#emul_button').addEventListener('click', ()=> {
-                console.log(document.getElementById('emul_action_list').value);
-                
+            document.querySelector('#emul_button').addEventListener('click', () => {
+                const combo_value = document.getElementById('emul_action_list').value;
+                switch (combo_value) {
+                    case "0": // run
+                        {
+                            vscode.postMessage({ type: 'start_emulator', compile: false });
+                            break;
+                        }
+                    case "1": // compile and run
+                        {
+                            vscode.postMessage({ type: 'start_emulator', compile: true });
+                            break;
+                        }
+                }
+
             })
 
 
