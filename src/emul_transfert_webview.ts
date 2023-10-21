@@ -1,11 +1,12 @@
 import { readFileSync } from 'fs';
 import * as vscode from 'vscode';
-import { logMessage } from './utils';
+import { logLongLoading, logMessage, logWarn, setLoadingLastLog, setLoadingState } from './utils';
 import { compileCG, compileFX, createProject, preinitCasioDevProject, setupCDTInCurrentFolder } from './fxsdk_manager';
 import { INSTALLING_FXSDK, IS_CDT_PROJECT, IS_FXSDK_INSTALLED, IS_WSL_INSTALLED, setIsCDTProjectState } from './extension';
 import { getWindowsPathFromWsl, getWslPathFromWindows } from './WSL_utils';
 import { startFxsdkInstallation } from './setup_dependencies';
 import { getFolderIsCDTProject } from './environment_checker';
+import { runEmulator } from './emulator_manager';
 
 
 var isLoading = false;
@@ -45,7 +46,7 @@ export class EmulTransViewProvider implements vscode.WebviewViewProvider {
 						console.log("Checking if the Emulator/Transfert view can be unlocked ...");
 						if (IS_FXSDK_INSTALLED) {
 							this._view?.webview.postMessage({ type: 'unlock' });
-						} 
+						}
 						break;
 					}
 				case 'install_emulator':
@@ -58,7 +59,16 @@ export class EmulTransViewProvider implements vscode.WebviewViewProvider {
 					}
 				case 'start_emulator':
 					{
-						
+						if (data.compile) {
+							if (IS_FXSDK_INSTALLED) {
+								logLongLoading("Compiling for CG", "compile_cg");
+								compileCG((log) => { setLoadingLastLog("compile_cg", log); }, () => { logMessage("The sources has been built successfully!"); setLoadingState("compile_cg", false); runEmulator(); });
+							} else {
+								logWarn("FxSDK needs to be installed to compile!");
+							}
+						} else {
+							runEmulator();
+						}
 						break;
 					}
 
@@ -87,30 +97,4 @@ export class EmulTransViewProvider implements vscode.WebviewViewProvider {
 			this._view?.webview.postMessage({ type: 'lock_not_CDT_Project' });
 		}
 	}
-}
-
-function compillingFinished() {
-	isLoading = false;
-	logMessage("The sources has been built successfully!");
-}
-
-function logLongCompilling() {
-	isLoading = true;
-	vscode.window.withProgress({
-		location: vscode.ProgressLocation.Notification,
-		cancellable: false,
-		title: 'Compilling'
-	}, async (progress) => {
-		await updateProgress(progress);
-	});
-}
-
-async function updateProgress(progress: vscode.Progress<{ message?: string | undefined; increment?: number | undefined; }>) {
-	if (!isLoading) { return; }
-	const poll = (resolve: any) => {
-		if (!isLoading) { resolve(); }
-		else { setTimeout((_: any) => { poll(resolve); progress.report({ message: lastLog }); }, 100); }
-	};
-
-	return new Promise(poll);
 }
