@@ -23,12 +23,16 @@
             float: center;
         }
 
-        .base_button:hover {
+        .base_button:hover:enabled {
             background: var(--vscode-button-hoverBackground);
         }
 
-        .base_button:active {
+        .base_button:active:enabled {
             outline: double var(--vscode-button-hoverBackground);
+        }
+
+        .base_button:disabled {
+            background-color: grey;
         }
 
         .start_emul_container button,
@@ -124,7 +128,8 @@
             </select>
         </div>
         <h3>Transfert to Calculator:</h3>
-        <button id="create_project" class="base_button">Transfert with copy</button>
+        <button id="transfert_copy" class="base_button">Transfert with copy</button>
+        <button id="transfert_push" class="base_button" disabled title="Only available on Linux (not WSL)">Transfert with Addin-Push</button>
     </div>
 
 
