@@ -69,13 +69,13 @@
 
             console.log("working !");
 
-            document.querySelector('#create_project').addEventListener('click', () => {
-                vscode.postMessage({ type: 'create_project' });
+            document.querySelector('#transfert_copy').addEventListener('click', () => {
+                vscode.postMessage({ type: 'transfert_copy' });
             });
 
-            /*document.querySelector('.install_emulator_button').addEventListener('click', () => {
-                vscode.postMessage({ type: 'install_fxsdk' });
-            });*/
+            document.querySelector('#transfert_push').addEventListener('click', () => {
+                vscode.postMessage({ type: 'transfert_push' });
+            });
 
             document.querySelector('#emul_button').addEventListener('click', () => {
                 const combo_value = document.getElementById('emul_action_list').value;
@@ -128,8 +128,12 @@
             </select>
         </div>
         <h3>Transfert to Calculator:</h3>
-        <button id="transfert_copy" class="base_button">Transfert with copy</button>
-        <button id="transfert_push" class="base_button" disabled title="Only available on Linux (not WSL)">Transfert with Addin-Push</button>
+        <button id="transfert_copy" class="base_button"
+            title="Simple copy of the addin. Your calculator must be connected with USB flash drive mode.">Transfert
+            with copy</button>
+        <button id="transfert_push" class="base_button" disabled
+            title="Use circuit10's Addin-Push to dirrectly load the addin on the calclator without saving it. Only available on Linux (not WSL).">Transfert
+            with Addin-Push</button>
     </div>
 
 
