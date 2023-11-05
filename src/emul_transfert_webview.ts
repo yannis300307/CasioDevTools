@@ -1,16 +1,12 @@
 import { readFileSync } from 'fs';
 import * as vscode from 'vscode';
 import { logLongLoading, logMessage, logWarn, setLoadingLastLog, setLoadingState } from './utils';
-import { compileCG, compileFX, createProject, preinitCasioDevProject, setupCDTInCurrentFolder } from './fxsdk_manager';
-import { INSTALLING_FXSDK, IS_CDT_PROJECT, IS_FXSDK_INSTALLED, IS_WSL_INSTALLED, setIsCDTProjectState } from './extension';
-import { getWindowsPathFromWsl, getWslPathFromWindows } from './WSL_utils';
+import { compileCG } from './fxsdk_manager';
+import { INSTALLING_FXSDK, IS_FXSDK_INSTALLED } from './extension';
 import { startFxsdkInstallation } from './setup_dependencies';
-import { getFolderIsCDTProject } from './environment_checker';
 import { runEmulator } from './emulator_manager';
 
 
-var isLoading = false;
-var lastLog = "";
 
 export class EmulTransViewProvider implements vscode.WebviewViewProvider {
 	public static readonly viewType = 'casiodev.emul_transfert';
@@ -71,7 +67,6 @@ export class EmulTransViewProvider implements vscode.WebviewViewProvider {
 						}
 						break;
 					}
-
 			}
 		});
 	}
@@ -87,14 +82,5 @@ export class EmulTransViewProvider implements vscode.WebviewViewProvider {
 		}
 
 		return defaultHtml;
-	}
-
-	public updateInstallation() {
-		console.log("Checking if the FXSDK view can be unlocked ...");
-		if (IS_FXSDK_INSTALLED && IS_CDT_PROJECT) {
-			this._view?.webview.postMessage({ type: 'unlock' });
-		} else if (!IS_CDT_PROJECT) {
-			this._view?.webview.postMessage({ type: 'lock_not_CDT_Project' });
-		}
 	}
 }
