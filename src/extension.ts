@@ -7,6 +7,7 @@ import { logWarn } from './utils';
 import { FxsdkViewProvider } from './fxsdk_webview';
 import { initCasioDevFolder, installCCPPExtension, startFxsdkInstallation, startGiteapcInstallation, updateHeadersFilesWithLog } from './setup_dependencies';
 import { EmulTransViewProvider } from './emul_transfert_webview';
+import { getCalculatorPath, transfertCopy } from './emul_transfert_manager';
 
 export var OS_NAME: string;
 export var IS_WSL_INSTALLED: boolean;
@@ -72,6 +73,9 @@ function checkEnvironment(extensionUri: vscode.Uri) {
 	console.log("Is C/C++ Extension installed ? " + IS_CCPP_EXTENSION_INSTALLED);
 	console.log("Current folder is CDT Project ? " + IS_CDT_PROJECT);
 	console.log("Extension path : " + EXTENSION_URI.fsPath);
+	console.log("Calculator path : " + getCalculatorPath());
+
+	transfertCopy(); // TODO : remove
 
 	if (vscode.workspace.workspaceFolders !== undefined) {
 		console.log("Current folder ? " + vscode.workspace.workspaceFolders[0].uri.fsPath);

@@ -4,7 +4,7 @@ import { logLongLoading, logMessage, logWarn, setLoadingLastLog, setLoadingState
 import { compileCG } from './fxsdk_manager';
 import { INSTALLING_FXSDK, IS_FXSDK_INSTALLED } from './extension';
 import { startFxsdkInstallation } from './setup_dependencies';
-import { runEmulator } from './emulator_manager';
+import { runEmulator } from './emul_transfert_manager';
 
 
 

@@ -5,7 +5,7 @@ import { logWarn } from './utils';
 import * as fs from 'fs';
 import { join } from 'path';
 
-function getG3aToRun() {
+function getLastG3a() {
     if (vscode.workspace.workspaceFolders === undefined) { return; }
     const path = vscode.workspace.workspaceFolders[0].uri.fsPath;
     var latest = "";
@@ -23,7 +23,7 @@ function getG3aToRun() {
 }
 
 export function runEmulator() {
-    const file = getG3aToRun();
+    const file = getLastG3a();
     if (file === undefined) { return; }
     try {
         if (OS_NAME === "windows") {
@@ -34,4 +34,41 @@ export function runEmulator() {
     } catch (error) {
         logWarn("Emulator crashed with the following error : " + (error as Error).message);
     }
+}
+
+export function getCalculatorPath() {
+    var foundName = "";
+    if (OS_NAME === "windows") {
+        var result = cp.execSync("wmic logicaldisk where drivetype=2 get name").toString();
+
+        result.split("\n").forEach((value) => {
+            if (value.includes(":")) {
+                var volName = value.substring(0, 2);
+                if (fs.existsSync(volName + "\\@MainMem")) {
+                    foundName = volName + "\\";
+                }
+            }
+        });
+    }
+    return foundName;
+}
+
+export function transfertCopy() {
+    //var calculatorPath = getCalculatorPath();
+    //var addinFile = getLastG3a();
+    //if (calculatorPath === "") { return 1; }
+
+    console.log("=================================");
+
+    const si = require('systeminformation');
+
+    si.blockDevices().then((data:any)=>{
+        console.log(data);
+    });
+
+    si.diskLayout().then((data:any)=>{
+        console.log(data);
+    });
+
+    return 0;
 }
