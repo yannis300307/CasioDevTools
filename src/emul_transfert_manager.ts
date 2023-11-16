@@ -1,9 +1,11 @@
 import * as cp from 'child_process';
 import { EXTENSION_URI, OS_NAME } from './extension';
 import * as vscode from 'vscode';
-import { logWarn } from './utils';
+import { logMessage, logWarn } from './utils';
 import * as fs from 'fs';
 import { join } from 'path';
+import * as si from 'systeminformation';
+import path = require('path');
 
 function getLastG3a() {
     if (vscode.workspace.workspaceFolders === undefined) { return; }
@@ -36,39 +38,63 @@ export function runEmulator() {
     }
 }
 
-export function getCalculatorPath() {
-    var foundName = "";
-    if (OS_NAME === "windows") {
-        var result = cp.execSync("wmic logicaldisk where drivetype=2 get name").toString();
 
-        result.split("\n").forEach((value) => {
-            if (value.includes(":")) {
-                var volName = value.substring(0, 2);
-                if (fs.existsSync(volName + "\\@MainMem")) {
-                    foundName = volName + "\\";
-                }
+async function getCalculatorsModels() { // maybe use it instead : https://github.com/node-usb/node-usb
+    var blockDevices = await si.blockDevices();
+    var diskLayout = await si.diskLayout();
+
+    var bindings: { [id: string]: string } = {};
+
+    blockDevices.forEach((block) => {
+        diskLayout.forEach((disk) => {
+            if (disk.device === block.device && disk.name.includes("CASIO")) {
+                bindings[block.mount] = disk.name;
             }
         });
-    }
-    return foundName;
+    });
+
+    return bindings;
 }
 
-export function transfertCopy() {
-    //var calculatorPath = getCalculatorPath();
-    //var addinFile = getLastG3a();
-    //if (calculatorPath === "") { return 1; }
+export function ejectDevice(letter: string) {
+    if (OS_NAME === "windows") {
+        cp.execSync("powershell -Command \"(New-Object -comObject Shell.Application).Namespace(17).ParseName('" + letter + "').InvokeVerb('Eject')\"");
+        console.log("Device ejected ! :  " + "powershell -Command \"(New-Object -comObject Shell.Application).Namespace(17).ParseName('" + letter + "').InvokeVerb('Eject')\"");
+    } else {
+        logWarn("Linux unmount not implemented yet"); // TODO : remove
+    }
+}
 
-    console.log("=================================");
+export async function transfertCopy(eject: boolean) {
+    console.log("Checking USB devices...");
 
-    const si = require('systeminformation');
+    logMessage("Transfering Add_in to the calculator...");
 
-    si.blockDevices().then((data:any)=>{
-        console.log(data);
-    });
+    var connectedCalculators = await getCalculatorsModels();
+    var disks = Object.keys(connectedCalculators);
 
-    si.diskLayout().then((data:any)=>{
-        console.log(data);
-    });
+    console.log(connectedCalculators);
 
-    return 0;
+    if (disks.length > 1) {
+        return logWarn("Transfert : More than one calculator has been detected. Please connect only one calculator at a time on your computer.");
+    }
+
+    if (connectedCalculators[disks[0]] === 'CASIO ColorGraph USB Device') {
+        var addinFile = getLastG3a();
+        if (addinFile === undefined) {
+            logWarn("Transfert : G3a file not found");
+            return;
+        }
+
+        fs.copyFileSync(addinFile, disks[0] + path.sep + addinFile.split(path.sep).at(-1));
+
+        if (eject) {
+            ejectDevice(disks[0]);
+        }
+    } else {
+        logWarn("Transfert : Transfert on this calculator is not implemented yet...");
+        return;
+    }
+
+    logMessage("Transfert : Transfert finished !");
 }

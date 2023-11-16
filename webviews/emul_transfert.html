@@ -36,6 +36,7 @@
         }
 
         .start_emul_container button,
+        .transfert_copy_container button,
         select {
             background-color: var(--vscode-input-background);
             border: 1px var(--vscode-input-border);
@@ -43,23 +44,29 @@
             border-radius: 0px;
             color: var(--vscode-input-foreground);
             margin: 0px;
-            height: 1.8em;
+            height: 18pt;
         }
 
-        #emul_acion {
-            width: 20em;
+        .start_emul_container,
+        .transfert_copy_container {
+            height: 20pt;
         }
 
-        #emul_action_list:focus {
+
+
+        #emul_action_list:focus,
+        #transfert_copy_action_list:focus {
             outline: 1px solid var(--vscode-inputOption-activeBorder);
         }
 
-        #emul_button {
+        #emul_button,
+        #transfert_copy {
             color: #89d185;
             font-weight: bold;
         }
 
-        #emul_button:active {
+        #emul_button:active,
+        #transfert_copy:active {
             outline: double var(--vscode-input-border);
         }
     </style>
@@ -70,7 +77,30 @@
             console.log("working !");
 
             document.querySelector('#transfert_copy').addEventListener('click', () => {
-                vscode.postMessage({ type: 'transfert_copy' });
+                const combo_value = document.getElementById('transfert_copy_action_list').value;
+                switch (combo_value) {
+                    case "0":
+                        {
+                            vscode.postMessage({ type: 'transfert_copy', eject: false, compile: false });
+                            break;
+                        }
+                    case "1":
+                        {
+                            vscode.postMessage({ type: 'transfert_copy', eject: true, compile: false });
+                            break;
+                        }
+                    case "2":
+                        {
+                            vscode.postMessage({ type: 'transfert_copy', eject: false, compile: true });
+                            break;
+                        }
+                    case "3":
+                        {
+                            vscode.postMessage({ type: 'transfert_copy', eject: true, compile: true });
+                            break;
+                        }
+                }
+
             });
 
             document.querySelector('#transfert_push').addEventListener('click', () => {
@@ -128,12 +158,20 @@
             </select>
         </div>
         <h3>Transfert to Calculator:</h3>
-        <button id="transfert_copy" class="base_button"
-            title="Simple copy of the addin. Your calculator must be connected with USB flash drive mode.">Transfert
-            with copy</button>
-        <button id="transfert_push" class="base_button" disabled
-            title="Use circuit10's Addin-Push to dirrectly load the addin on the calclator without saving it. Only available on Linux (not WSL).">Transfert
-            with Addin-Push</button>
+        <h4>Copy transfert :
+    </div>
+    <div class="transfert_copy_container"
+        title="Simple copy of the addin. Your calculator must be connected with USB flash drive mode.">
+        <button id="transfert_copy">▷</button><select name="thelist2" id="transfert_copy_action_list">
+            <option value="0">Transfert</option>
+            <option value="1">Transfert and eject</option>
+            <option value="2">Compile and transfert</option>
+            <option value="3">Compile, transfert and eject</option>
+        </select>
+    </div>
+    <h4>Add-in push :</h4>
+    <button id="transfert_push" class="base_button" disabled
+        title="Use circuit10's Addin-Push to dirrectly load the addin on the calclator without saving it. Only available on Linux (not WSL).">Push</button>
     </div>
 
 

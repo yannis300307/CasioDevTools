@@ -4,7 +4,7 @@ import { logLongLoading, logMessage, logWarn, setLoadingLastLog, setLoadingState
 import { compileCG } from './fxsdk_manager';
 import { INSTALLING_FXSDK, IS_FXSDK_INSTALLED } from './extension';
 import { startFxsdkInstallation } from './setup_dependencies';
-import { runEmulator } from './emul_transfert_manager';
+import { runEmulator, transfertCopy } from './emul_transfert_manager';
 
 
 
@@ -65,6 +65,21 @@ export class EmulTransViewProvider implements vscode.WebviewViewProvider {
 						} else {
 							runEmulator();
 						}
+						break;
+					}
+				case 'transfert_copy':
+					{
+						if (data.compile) {
+							if (IS_FXSDK_INSTALLED) {
+								logLongLoading("Compiling for CG", "compile_cg");
+								compileCG((log) => { setLoadingLastLog("compile_cg", log); }, () => { logMessage("The sources has been built successfully!"); setLoadingState("compile_cg", false); transfertCopy(data.eject); });
+							} else {
+								logWarn("FxSDK needs to be installed to compile!");
+							}
+						} else {
+							transfertCopy(data.eject);
+						}
+
 						break;
 					}
 			}
