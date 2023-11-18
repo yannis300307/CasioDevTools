@@ -29,9 +29,9 @@ export function runEmulator() {
     if (file === undefined) { return; }
     try {
         if (OS_NAME === "windows") {
-            cp.exec("\"" + vscode.Uri.joinPath(EXTENSION_URI, "emulators", "calcemu").fsPath + "\" \"" + file + "\"");
+            cp.exec("\"" + vscode.Uri.joinPath(EXTENSION_URI, "dependencies", "calcemu").fsPath + "\" \"" + file + "\"");
         } else {
-            cp.exec("\"" + vscode.Uri.joinPath(EXTENSION_URI, "emulators", "calcemu").fsPath + "\" \"" + file + "\"");
+            cp.exec("\"" + vscode.Uri.joinPath(EXTENSION_URI, "dependencies", "calcemu").fsPath + "\" \"" + file + "\"");
         }
     } catch (error) {
         logWarn("Emulator crashed with the following error : " + (error as Error).message);
