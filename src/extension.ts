@@ -7,7 +7,6 @@ import { logWarn } from './utils';
 import { FxsdkViewProvider } from './fxsdk_webview';
 import { initCasioDevFolder, installCCPPExtension, startFxsdkInstallation, startGiteapcInstallation, updateHeadersFilesWithLog } from './setup_dependencies';
 import { EmulTransViewProvider } from './emul_transfert_webview';
-import { transfertCopy } from './emul_transfert_manager';
 
 export var OS_NAME: string;
 export var IS_WSL_INSTALLED: boolean;
@@ -46,6 +45,10 @@ function setupViews(context: vscode.ExtensionContext) {
 
 	vscode.commands.registerCommand("casiodev.reloadfxsdkwebview", () => {
 		fxsdkViewProvider.updateInstallation();
+	});
+
+	vscode.commands.registerCommand("casiodev.reloadtransfertemulwebview", () => {
+		emulTransViewProvider.refresh();
 	});
 
 	console.log("Views successfully registered !");

@@ -71,7 +71,11 @@ export async function transfertCopy(eject: boolean) {
     console.log(connectedCalculators);
 
     if (disks.length > 1) {
-        return logWarn("Transfert : More than one calculator has been detected. Please connect only one calculator at a time on your computer.");
+        logWarn("Transfert : More than one calculator has been detected. Please connect only one calculator at a time on your computer.");
+        return;
+    } else if (disks.length === 0) {
+        logWarn("Transfert : No calculator has been detected! Please check the connexion and if the calculator model is compatible.");
+        return;
     }
 
     if (connectedCalculators[disks[0]] === 'CASIO ColorGraph USB Device') {
@@ -101,4 +105,14 @@ export async function transfertCopy(eject: boolean) {
         logMessage("Transfert : Transfert finished!");
     }
     
+}
+
+export async function pushTransfert() {
+    logMessage("Transfert : Pushing the Add-in...");
+
+    if (OS_NAME === "linux") {
+        executeCommand("fxsdk build-cg-push -s");
+    } else {
+        logWarn("Add-in push is only available on Linux!");
+    }
 }

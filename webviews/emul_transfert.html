@@ -128,17 +128,22 @@
             window.addEventListener('message', event => {
                 const message = event.data; // The json data that the extension sent
                 switch (message.type) {
-                    case 'unlock':
+                    case 'lock_not_CDT_Project':
                         {
-                            document.querySelector("#need_emulator").hidden = false;
-                            document.querySelector("#unavailable").hidden = true;
-                            console.log("Unlocked Emulator webview !")
+                            document.querySelector(".need_CDT_project").hidden = true
+                            document.querySelector("#not_CDT_project").hidden = false;
+                            console.log("CDT is not setup in this folder !")
                             break;
                         }
+                    case 'unlock': {
+                        document.querySelector(".need_CDT_project").hidden = false
+                        document.querySelector("#not_CDT_project").hidden = true;
+                        console.log("Unlocked Tranfert/Emulator view!");
+                    }
                 }
             });
-            // Send a message to the webview provider to unlock the webview if The Emulator is installed.
-            vscode.postMessage({ type: 'check_for_emulator_installed' });
+            // Send a message to the webview provider to unlock the webview if CDT in configured
+            vscode.postMessage({ type: 'check_for_CDT_setup' });
         });
     </script>
 </head>
@@ -146,34 +151,41 @@
 <body>
     <h2 class="title">Emulate and Transfert</h2>
 
-    <div id="main">
+    <div id="main" class="need_CDT_project">
         <h3>Emulator:</h3>
-        <div class="need_emulator" hidden>
-            <button id="emu_button" class="start_emu_button base_button">Launch CG-50 / Graph90+e emulator</button>
-        </div>
-        <div class="start_emul_container">
+
+        <div class="start_emul_container" title="Launch CG-50 / Graph90+e emulator">
             <button id="emul_button">▷</button><select name="thelist" id="emul_action_list">
                 <option value="0">Run Emulator</option>
                 <option value="1">Compile and run</option>
             </select>
         </div>
+
         <h3>Transfert to Calculator:</h3>
+
         <h4>Copy transfert :
-    </div>
-    <div class="transfert_copy_container"
-        title="Simple copy of the addin. Your calculator must be connected with USB flash drive mode.">
-        <button id="transfert_copy">▷</button><select name="thelist2" id="transfert_copy_action_list">
-            <option value="0">Transfert</option>
-            <option value="1">Transfert and eject</option>
-            <option value="2">Compile and transfert</option>
-            <option value="3">Compile, transfert and eject</option>
-        </select>
-    </div>
-    <h4>Add-in push :</h4>
-    <button id="transfert_push" class="base_button" disabled
-        title="Use circuit10's Addin-Push (which needs to be installed on the calculator) to dirrectly load the addin on the calclator without saving it. Only available on Linux (not WSL).">Push</button>
+            <div class="transfert_copy_container"
+                title="Simple copy of the addin. Your calculator must be connected with USB flash drive mode.">
+                <button id="transfert_copy">▷</button><select name="thelist2" id="transfert_copy_action_list">
+                    <option value="0">Transfert</option>
+                    <option value="1">Transfert and eject</option>
+                    <option value="2">Compile and transfert</option>
+                    <option value="3">Compile, transfert and eject</option>
+                </select>
+            </div>
+
+            <h4>Add-in push :</h4>
+
+            <button id="transfert_push" class="base_button" disabled
+                title="Use circuit10's Addin-Push (which needs to be installed on the calculator) to dirrectly load the addin on the calclator without saving it. Only available on Linux (not WSL).">Push</button>
     </div>
 
+    <div id="not_CDT_project" hidden>
+        <p>This folder is not a Casio Dev Tools project. You can mark it as a CDT project. (It will setup CDT
+            dependencies in the current folder)
+        </p>
+        <button class="base_button setup_CDT">Setup CDT in this folder</button>
+    </div>
 
 </body>
 

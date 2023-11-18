@@ -1,10 +1,9 @@
 import { readFileSync } from 'fs';
 import * as vscode from 'vscode';
 import { logLongLoading, logMessage, logWarn, setLoadingLastLog, setLoadingState } from './utils';
-import { compileCG } from './fxsdk_manager';
-import { INSTALLING_FXSDK, IS_FXSDK_INSTALLED } from './extension';
-import { startFxsdkInstallation } from './setup_dependencies';
-import { runEmulator, transfertCopy } from './emul_transfert_manager';
+import { compileCG, setupCDTInCurrentFolder } from './fxsdk_manager';
+import { IS_CDT_PROJECT, IS_FXSDK_INSTALLED } from './extension';
+import { pushTransfert, runEmulator, transfertCopy } from './emul_transfert_manager';
 
 
 
@@ -37,20 +36,19 @@ export class EmulTransViewProvider implements vscode.WebviewViewProvider {
 
 		webviewView.webview.onDidReceiveMessage(async data => {
 			switch (data.type) {
-				case "check_for_emulator_installed":
+				case "check_for_CDT_setup":
 					{
 						console.log("Checking if the Emulator/Transfert view can be unlocked ...");
-						if (IS_FXSDK_INSTALLED) {
+						if (IS_CDT_PROJECT) {
 							this._view?.webview.postMessage({ type: 'unlock' });
+						} else {
+							this._view?.webview.postMessage({ type: 'lock_not_CDT_Project' });
 						}
 						break;
 					}
-				case 'install_emulator':
+				case 'setup_CDT':
 					{
-						console.log(INSTALLING_FXSDK);
-						if (!INSTALLING_FXSDK) {
-							startFxsdkInstallation("Yes", false);
-						}
+						setupCDTInCurrentFolder();
 						break;
 					}
 				case 'start_emulator':
@@ -82,6 +80,10 @@ export class EmulTransViewProvider implements vscode.WebviewViewProvider {
 
 						break;
 					}
+				case 'transfert_push':
+					{
+						pushTransfert();
+					}
 			}
 		});
 	}
@@ -97,5 +99,13 @@ export class EmulTransViewProvider implements vscode.WebviewViewProvider {
 		}
 
 		return defaultHtml;
+	}
+	public refresh() {
+		console.log("Checking if the Transfert/Emulator view can be unlocked ...");
+		if (!IS_CDT_PROJECT) {
+			this._view?.webview.postMessage({ type: 'lock_not_CDT_Project' });
+		} else {
+			this._view?.webview.postMessage({ type: 'unlock' });
+		}
 	}
 }

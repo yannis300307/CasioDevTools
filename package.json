@@ -26,6 +26,10 @@
       {
         "command": "casiodev.reloadgiteapcwebview",
         "title": "Reload the GiteaPC Webview"
+      },
+      {
+        "command": "casiodev.reloadtransfertemulwebview",
+        "title": "Reload the GiteaPC Webview"
       }
     ],
     "viewsContainers": {
