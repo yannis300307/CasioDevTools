@@ -6,13 +6,16 @@ import * as fs from 'fs';
 import { join } from 'path';
 import * as si from 'systeminformation';
 import path = require('path');
+import { executeCommand } from './commands_util';
+var ejectMedia = require('eject-media');
 
-function getLastG3a() {
+
+function getLastAddin(type: string) {
     if (vscode.workspace.workspaceFolders === undefined) { return; }
     const path = vscode.workspace.workspaceFolders[0].uri.fsPath;
     var latest = "";
     var latestMtime = 0;
-    fs.readdirSync(path).filter((name) => name.endsWith(".g3a")).forEach((value) => {
+    fs.readdirSync(path).filter((name) => name.endsWith("."+type)).forEach((value) => {
         const stat = fs.statSync(join(path, value));
         const mTimeMs = stat.mtimeMs;
         if (mTimeMs > latestMtime) {
@@ -25,7 +28,7 @@ function getLastG3a() {
 }
 
 export function runEmulator() {
-    const file = getLastG3a();
+    const file = getLastAddin("g3a");
     if (file === undefined) { return; }
     try {
         if (OS_NAME === "windows") {
@@ -56,14 +59,6 @@ async function getCalculatorsModels() { // maybe use it instead : https://github
     return bindings;
 }
 
-export function ejectDevice(letter: string) {
-    if (OS_NAME === "windows") {
-        cp.execSync("powershell -Command \"(New-Object -comObject Shell.Application).Namespace(17).ParseName('" + letter + "').InvokeVerb('Eject')\"");
-        console.log("Device ejected ! :  " + "powershell -Command \"(New-Object -comObject Shell.Application).Namespace(17).ParseName('" + letter + "').InvokeVerb('Eject')\"");
-    } else {
-        logWarn("Linux unmount not implemented yet"); // TODO : remove
-    }
-}
 
 export async function transfertCopy(eject: boolean) {
     console.log("Checking USB devices...");
@@ -80,21 +75,30 @@ export async function transfertCopy(eject: boolean) {
     }
 
     if (connectedCalculators[disks[0]] === 'CASIO ColorGraph USB Device') {
-        var addinFile = getLastG3a();
+        var addinFile = getLastAddin("g3a");
         if (addinFile === undefined) {
             logWarn("Transfert : G3a file not found");
             return;
         }
-
-        fs.copyFileSync(addinFile, disks[0] + path.sep + addinFile.split(path.sep).at(-1));
-
-        if (eject) {
-            ejectDevice(disks[0]);
+        
+    } else if (connectedCalculators[disks[0]] === 'CASIO Calculator USB Device') {
+        var addinFile = getLastAddin("g1a");
+        if (addinFile === undefined) {
+            logWarn("Transfert : G1a file not found");
+            return;
         }
     } else {
-        logWarn("Transfert : Transfert on this calculator is not implemented yet...");
+        logWarn("Transfert : Transfert on this calculator not supported!");
         return;
     }
 
-    logMessage("Transfert : Transfert finished !");
+    fs.copyFileSync(addinFile, disks[0] + path.sep + addinFile.split(path.sep).at(-1));
+
+    if (eject) {
+        ejectMedia.eject(disks[0]);
+        logMessage("Transfert : Transfert finished! The calulator has been ejected! You can now disconnect it.");
+    } else {
+        logMessage("Transfert : Transfert finished!");
+    }
+    
 }
