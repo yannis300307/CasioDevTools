@@ -15,7 +15,7 @@ function getLastAddin(type: string) {
     const path = vscode.workspace.workspaceFolders[0].uri.fsPath;
     var latest = "";
     var latestMtime = 0;
-    fs.readdirSync(path).filter((name) => name.endsWith("."+type)).forEach((value) => {
+    fs.readdirSync(path).filter((name) => name.endsWith("." + type)).forEach((value) => {
         const stat = fs.statSync(join(path, value));
         const mTimeMs = stat.mtimeMs;
         if (mTimeMs > latestMtime) {
@@ -84,7 +84,7 @@ export async function transfertCopy(eject: boolean) {
             logWarn("Transfert : G3a file not found");
             return;
         }
-        
+
     } else if (connectedCalculators[disks[0]] === 'CASIO Calculator USB Device') {
         var addinFile = getLastAddin("g1a");
         if (addinFile === undefined) {
@@ -104,7 +104,7 @@ export async function transfertCopy(eject: boolean) {
     } else {
         logMessage("Transfert : Transfert finished!");
     }
-    
+
 }
 
 export async function pushTransfert() {
@@ -114,5 +114,31 @@ export async function pushTransfert() {
         executeCommand("fxsdk build-cg-push -s");
     } else {
         logWarn("Add-in push is only available on Linux!");
+    }
+}
+
+export async function transfertPushAddin() {
+    logMessage("Transfering FastLoad Add-in to the calculator...");
+
+    var connectedCalculators = await getCalculatorsModels();
+    var disks = Object.keys(connectedCalculators);
+
+    console.log(connectedCalculators);
+
+    if (disks.length > 1) {
+        logWarn("Transfert : More than one calculator has been detected. Please connect only one calculator at a time on your computer.");
+        return;
+    } else if (disks.length === 0) {
+        logWarn("Transfert : No calculator has been detected! Please check the connexion and if the calculator model is compatible.");
+        return;
+    }
+
+    if (connectedCalculators[disks[0]] === 'CASIO ColorGraph USB Device') {
+        fs.copyFileSync(vscode.Uri.joinPath(EXTENSION_URI, "dependencies", "linkapp.g3a").fsPath, disks[0] + path.sep + "linkapp.g3a");
+        ejectMedia.eject(disks[0]);
+        logMessage("Add-in Push has been transfered to your calculator!");
+    } else {
+        logWarn("Add-in Push / FastLoad is not supported by your calculator. (Only for FX-CG50 and Graph 90+e)");
+        return;
     }
 }

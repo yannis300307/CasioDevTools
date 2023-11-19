@@ -106,6 +106,9 @@
             document.querySelector('#transfert_push').addEventListener('click', () => {
                 vscode.postMessage({ type: 'transfert_push' });
             });
+            document.querySelector('#transfert_push_addin').addEventListener('click', () => {
+                vscode.postMessage({ type: 'transfert_push_addin' });
+            });
 
             document.querySelector('#emul_button').addEventListener('click', () => {
                 const combo_value = document.getElementById('emul_action_list').value;
@@ -130,16 +133,22 @@
                 switch (message.type) {
                     case 'lock_not_CDT_Project':
                         {
-                            document.querySelector(".need_CDT_project").hidden = true
+                            document.querySelector(".need_CDT_project").hidden = true;
                             document.querySelector("#not_CDT_project").hidden = false;
                             console.log("CDT is not setup in this folder !")
                             break;
                         }
-                    case 'unlock': {
-                        document.querySelector(".need_CDT_project").hidden = false
-                        document.querySelector("#not_CDT_project").hidden = true;
-                        console.log("Unlocked Tranfert/Emulator view!");
-                    }
+                    case 'unlock':
+                        {
+                            document.querySelector(".need_CDT_project").hidden = false;
+                            document.querySelector("#not_CDT_project").hidden = true;
+                            console.log("Unlocked Tranfert/Emulator view!");
+                        }
+                    case 'unlock_push':
+                        {
+                            document.querySelector(".addin_push").hidden = false;
+                            console.log("Unlocked Addin Push");
+                        }
                 }
             });
             // Send a message to the webview provider to unlock the webview if CDT in configured
@@ -177,8 +186,11 @@
 
         <h4>Add-in push :</h4>
 
-        <button id="transfert_push" class="base_button" disabled
+        <button id="transfert_push" class="base_button addin_push" disabled
             title="Use circuit10's Addin-Push (which needs to be installed on the calculator) to dirrectly load the addin on the calclator without saving it. Only available on Linux (not WSL).">Push</button>
+        <button id="transfert_push_addin" class="base_button"
+            title="Transfert the Addin-Push add-in to your calculator. You needs to start the add-in before pushing to the calculator.">Send
+            Addin-Push</button>
     </div>
 
     <div id="not_CDT_project" hidden>

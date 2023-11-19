@@ -2,8 +2,8 @@ import { readFileSync } from 'fs';
 import * as vscode from 'vscode';
 import { logLongLoading, logMessage, logWarn, setLoadingLastLog, setLoadingState } from './utils';
 import { compileCG, setupCDTInCurrentFolder } from './fxsdk_manager';
-import { IS_CDT_PROJECT, IS_FXSDK_INSTALLED } from './extension';
-import { pushTransfert, runEmulator, transfertCopy } from './emul_transfert_manager';
+import { IS_CDT_PROJECT, IS_FXSDK_INSTALLED, OS_NAME } from './extension';
+import { pushTransfert, runEmulator, transfertCopy, transfertPushAddin } from './emul_transfert_manager';
 
 
 
@@ -44,6 +44,9 @@ export class EmulTransViewProvider implements vscode.WebviewViewProvider {
 						} else {
 							this._view?.webview.postMessage({ type: 'lock_not_CDT_Project' });
 						}
+						if (OS_NAME === "linux") {
+							this._view?.webview.postMessage({ type: 'unlock_push' });
+						}
 						break;
 					}
 				case 'setup_CDT':
@@ -83,6 +86,10 @@ export class EmulTransViewProvider implements vscode.WebviewViewProvider {
 				case 'transfert_push':
 					{
 						pushTransfert();
+					}
+				case 'transfert_push_addin':
+					{
+						transfertPushAddin();
 					}
 			}
 		});
