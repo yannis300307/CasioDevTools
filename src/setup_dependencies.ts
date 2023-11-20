@@ -6,7 +6,7 @@ import { getCCPPExtensionInstalled, getFxsdkInstalled } from './environment_chec
 import { IS_WSL_INSTALLED, OS_NAME, setCCPPExtensionInstallState, setFxsdkInstallState, setFxsdkInstallingState, setGiteapcInstallState, setGiteapcInstallingState, setIsCDTProjectState } from './extension';
 import { updateHeadersFiles } from './WSL_utils';
 import { ExecException, exec } from 'child_process';
-import { existsSync, mkdir, mkdirSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
 
@@ -43,6 +43,8 @@ export function startGiteapcInstallation(answer: string | undefined, retry = fal
 			}
 			setGiteapcInstallingState(false);
 		});
+	} else {
+		setGiteapcInstallingState(false);
 	}
 	return false;
 }
@@ -70,6 +72,8 @@ export function startFxsdkInstallation(answer: string | undefined, retry = false
 			installFxsdk(password, (log: string) => { let logs = log.split("\n"); lastLog = logs[logs.length - 1]; }, () => { finishFxsdkInstallation(); });
 			return true;
 		});
+	} else {
+		setFxsdkInstallingState(false);
 	}
 	return false;
 }

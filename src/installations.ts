@@ -28,27 +28,31 @@ export async function installGiteapc(password: string) {
     if (output[0] === "failed") { return output; }
 
     var pathExportString = "export PATH=\\\"$PATH:/home/el/.local/bin\\\"";
-    output = executeCommand('cd; if ! grep -q "' + pathExportString + '" ".bashrc"; then echo "' + pathExportString + '" >> .bashrc; fi');
+    output = executeCommand('cd; if ! grep -q "' + pathExportString + '" ".bashrc"; then echo "\\' + pathExportString + '" >> .bashrc; fi');
     if (output[0] === "failed") { return output; }
 
     if (IS_WSL_INSTALLED) { cp.execSync("wsl --shutdown"); };
 
-    output = executeCommand("giteapc --help");
+    output = executeCommand(getGiteaPCScript()+" --help");
     if (output[0] === "failed") { return output; }
 
     return "success";
 }
 
+export function getGiteaPCScript() {
+    return getGiteapcPath()+"/Lephenixnoir/GiteaPC/giteapc.py";
+}
+
 export async function giteapcInstallLib(libName: string) {
     if (IS_GITEAPC_INSTALLED) {
-        var output = await executeCommandAsync("giteapc install " + libName + " -y");
+        var output = await executeCommandAsync(getGiteaPCScript()+" install " + libName + " -y");
         return output;
     } return ["failed", "", false];
 }
 
 export async function giteapcUninstallLib(libName: string) {
     if (IS_GITEAPC_INSTALLED) {
-        var output = await executeCommandAsync("giteapc uninstall " + libName);
+        var output = await executeCommandAsync(getGiteaPCScript()+" uninstall " + libName);
         return output;
     } return ["failed", "", false];
 }

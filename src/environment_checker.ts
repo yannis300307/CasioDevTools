@@ -4,6 +4,7 @@ import { IS_WSL_INSTALLED, OS_NAME } from './extension';
 import * as vscode from 'vscode';
 import { existsSync } from 'fs';
 import { join } from 'path';
+import { getGiteaPCScript } from './installations';
 
 
 /**
@@ -41,12 +42,12 @@ export function getWslInstalled() {
 export function getGiteapcInstalled() {
     if ((OS_NAME === "windows" && IS_WSL_INSTALLED)) {
         try {
-            var giteaVersion = cp.execSync("wsl --shell-type login giteapc --version");
+            var giteaVersion = cp.execSync("wsl --shell-type login " + getGiteaPCScript() + " --version");
         } catch (_) { return false; }
         return giteaVersion.toString('utf8').includes("GiteaPC");
     } else if (OS_NAME === "linux") {
         try {
-            var giteaVersion = cp.execSync("giteapc --version");
+            var giteaVersion = cp.execSync(getGiteaPCScript() + " --version");
         } catch (_) { return false; }
         return giteaVersion.toString('utf8').includes("GiteaPC");
     } else {

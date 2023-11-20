@@ -6,6 +6,7 @@ import { GiteaPCViewProvider } from "./gitepc_webview";
 import { logWarn } from './utils';
 import { FxsdkViewProvider } from './fxsdk_webview';
 import { initCasioDevFolder, installCCPPExtension, startFxsdkInstallation, startGiteapcInstallation, updateHeadersFilesWithLog } from './setup_dependencies';
+import { EmulTransViewProvider } from './emul_transfert_webview';
 
 export var OS_NAME: string;
 export var IS_WSL_INSTALLED: boolean;
@@ -14,13 +15,15 @@ export var IS_FXSDK_INSTALLED: boolean;
 export var IS_CCPP_EXTENSION_INSTALLED: boolean;
 export var IS_CDT_PROJECT: boolean;
 
+export var EXTENSION_URI: vscode.Uri;
+
 export var INSTALLING_FXSDK = false;
 export var INSTALLING_GITEAPC = false;
 
 
 export function activate(context: vscode.ExtensionContext) {
 	setupViews(context);
-	checkEnvironment();
+	checkEnvironment(context.extensionUri);
 }
 
 function setupViews(context: vscode.ExtensionContext) {
@@ -32,6 +35,10 @@ function setupViews(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.window.registerWebviewViewProvider(FxsdkViewProvider.viewType, fxsdkViewProvider));
 
+	const emulTransViewProvider = new EmulTransViewProvider(context.extensionUri);
+	context.subscriptions.push(
+		vscode.window.registerWebviewViewProvider(EmulTransViewProvider.viewType, emulTransViewProvider));
+
 	vscode.commands.registerCommand("casiodev.reloadgiteapcwebview", () => {
 		giteapcViewProvider.updateInstallation();
 	});
@@ -40,12 +47,15 @@ function setupViews(context: vscode.ExtensionContext) {
 		fxsdkViewProvider.updateInstallation();
 	});
 
+	vscode.commands.registerCommand("casiodev.reloadtransfertemulwebview", () => {
+		emulTransViewProvider.refresh();
+	});
+
 	console.log("Views successfully registered !");
 }
-function checkEnvironment() {
+function checkEnvironment(extensionUri: vscode.Uri) {
 	OS_NAME = getOS();
 	IS_WSL_INSTALLED = getWslInstalled();
-
 
 	if (OS_NAME === "unknown") {
 		logWarn('Casio Dev Tools extension is not actually compatible with your OS ... many features will not work.');
@@ -58,11 +68,14 @@ function checkEnvironment() {
 	IS_CCPP_EXTENSION_INSTALLED = getCCPPExtensionInstalled(); // Imperatively after IS_WSL_INSTALLED
 	IS_CDT_PROJECT = getFolderIsCDTProject();
 
+	EXTENSION_URI = extensionUri;
+
 	console.log("OS name ? " + OS_NAME);
 	console.log("Is wsl installed ? " + IS_WSL_INSTALLED);
 	console.log("Is GiteaPC installed ? " + IS_GITEAPC_INSTALLED);
 	console.log("Is C/C++ Extension installed ? " + IS_CCPP_EXTENSION_INSTALLED);
 	console.log("Current folder is CDT Project ? " + IS_CDT_PROJECT);
+	console.log("Extension path : " + EXTENSION_URI.fsPath);
 
 	if (vscode.workspace.workspaceFolders !== undefined) {
 		console.log("Current folder ? " + vscode.workspace.workspaceFolders[0].uri.fsPath);
