@@ -125,11 +125,11 @@ export async function giteapcGetLibsList(libName: string) {
     return [];
 }
 
-export function installFxsdk(rootPassword: string, onLog: (log: string) => any, onExit: () => any) {
+export function installFxsdk(rootPassword: string, onLog: (log: string) => any, onSuccess: () => any, onError: (error: any) => any) {
     if (IS_GITEAPC_INSTALLED) {
         // install fxsdk dependencies
         if (!rootPassword) { rootPassword = "pass"; }
-        executeCommandCallbackOnLog("sudo apt install cmake python3-pil libusb-1.0-0-dev libsdl2-dev libpng16-16 libpng-dev ncurses-dev -y; sudo apt install  libmpfr-dev libmpc-dev libgmp-dev libppl-dev flex texinfo -y; ~/.local/share/giteapc/Lephenixnoir/GiteaPC/giteapc.py install Lephenixnoir/fxsdk:noudisks2 Lephenixnoir/sh-elf-binutils Lephenixnoir/sh-elf-gcc -y; ~/.local/share/giteapc/Lephenixnoir/GiteaPC/giteapc.py install Lephenixnoir/OpenLibm Vhex-Kernel-Core/fxlibc Lephenixnoir/sh-elf-gcc -y; ~/.local/share/giteapc/Lephenixnoir/GiteaPC/giteapc.py install Lephenixnoir/gint -y", onLog, rootPassword, onExit);
+        executeCommandCallbackOnLog("sudo apt install cmake python3-pil libusb-1.0-0-dev libsdl2-dev libpng16-16 libpng-dev ncurses-dev -y; sudo apt install  libmpfr-dev libmpc-dev libgmp-dev libppl-dev flex texinfo -y; ~/.local/share/giteapc/Lephenixnoir/GiteaPC/giteapc.py install Lephenixnoir/fxsdk:noudisks2 Lephenixnoir/sh-elf-binutils Lephenixnoir/sh-elf-gcc -y; ~/.local/share/giteapc/Lephenixnoir/GiteaPC/giteapc.py install Lephenixnoir/OpenLibm Vhex-Kernel-Core/fxlibc Lephenixnoir/sh-elf-gcc -y; ~/.local/share/giteapc/Lephenixnoir/GiteaPC/giteapc.py install Lephenixnoir/gint -y", onLog, rootPassword, onSuccess, onError);
     } else {
         return ["failed", "", false];
     }

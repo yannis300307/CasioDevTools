@@ -55,13 +55,27 @@ export class FxsdkViewProvider implements vscode.WebviewViewProvider {
 				case "compile_cg":
 					{
 						logLongLoading("Compiling for CG", "compile_cg");
-						compileCG((log) => { setLoadingLastLog("compile_cg", log); }, () => { logMessage("The sources has been built successfully!"); setLoadingState("compile_cg", false); });
+						compileCG((log) => {
+							setLoadingLastLog("compile_cg", log);
+						}, () => {
+							logMessage("The sources has been built successfully!");
+							setLoadingState("compile_cg", false);
+						}, (error: any) => {
+							logWarn("An error occured durring the building of the Add-in: " + error.message);
+						});
 						break;
 					}
 				case "compile_fx":
 					{
 						logLongLoading("Compiling for FX", "compile_fx");
-						compileFX((log) => { setLoadingLastLog("compile_fx", log); }, () => { logMessage("The sources has been built successfully!"); setLoadingState("compile_fx", false); });
+						compileFX((log) => {
+							setLoadingLastLog("compile_fx", log);
+						}, () => {
+							logMessage("The sources has been built successfully!");
+							setLoadingState("compile_fx", false);
+						}, (error: any) => {
+							logWarn("An error occured durring the building of the Add-in: " + error.message);
+						});
 						break;
 					}
 				case "create_project":

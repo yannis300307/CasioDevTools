@@ -69,7 +69,7 @@ export function startFxsdkInstallation(answer: string | undefined, retry = false
 			}
 			logLongInstallation();
 			logMessage("Installing fxsdk... Warning : It could takes up to 1 hour to install !");
-			installFxsdk(password, (log: string) => { let logs = log.split("\n"); lastLog = logs[logs.length - 1]; }, () => { finishFxsdkInstallation(); });
+			installFxsdk(password, (log: string) => { let logs = log.split("\n"); lastLog = logs[logs.length - 1]; }, finishFxsdkInstallation, finishFxsdkInstallation);
 			return true;
 		});
 	} else {

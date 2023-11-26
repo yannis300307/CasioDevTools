@@ -7,20 +7,20 @@ import { join } from "path";
 import { initCasioDevFolder, updateHeadersFilesWithLog } from "./setup_dependencies";
 import { logMessage } from "./utils";
 
-export function compileCG(onLog: (log: string) => any, onExit: () => any) {
+export function compileCG(onLog: (log: string) => any, onSuccess: () => any, onError: (error:any) => any) {
     var path;
-    if (vscode.workspace.workspaceFolders === undefined) { onExit(); return; }
+    if (vscode.workspace.workspaceFolders === undefined) { onSuccess(); return; }
     if (IS_WSL_INSTALLED) {
         path = vscode.workspace.workspaceFolders[0].uri.fsPath;
         path = getWslPathFromWindows(path);
     } else {
         path = vscode.workspace.workspaceFolders[0].uri.fsPath;
     }
-    executeCommandCallbackOnLog("cd \"" + path + "\"; fxsdk build-cg", onLog, "", onExit);
+    executeCommandCallbackOnLog("cd \"" + path + "\"; fxsdk build-cg", onLog, "", onSuccess, onError);
 }
 
-export function compileFX(onLog: (log: string) => any, onExit: () => any) {
-    if (vscode.workspace.workspaceFolders === undefined) { onExit(); return; }
+export function compileFX(onLog: (log: string) => any, onSuccess: () => any, onError: (error:any) => any) {
+    if (vscode.workspace.workspaceFolders === undefined) { onSuccess(); return; }
     if (IS_WSL_INSTALLED) {
         var path = vscode.workspace.workspaceFolders[0].uri.fsPath;
         path = getWslPathFromWindows(path);
@@ -28,7 +28,7 @@ export function compileFX(onLog: (log: string) => any, onExit: () => any) {
         var path = vscode.workspace.workspaceFolders[0].uri.fsPath;
     }
     console.log("path : " + path);
-    executeCommandCallbackOnLog("cd \"" + path + "\"; fxsdk build-fx", onLog, "", onExit);
+    executeCommandCallbackOnLog("cd \"" + path + "\"; fxsdk build-fx", onLog, "", onSuccess, onError);
 }
 
 export function createProject(dir: string, name: string) {
