@@ -51,6 +51,7 @@ export function setupCDTInCurrentFolder() {
 
     vscode.commands.executeCommand("casiodev.reloadgiteapcwebview");
     vscode.commands.executeCommand("casiodev.reloadfxsdkwebview");
+    vscode.commands.executeCommand("casiodev.reloadtransfertemulwebview");
 
     logMessage("This folder is now a Casio Dev Tools project!");
 }
