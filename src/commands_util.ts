@@ -6,7 +6,11 @@ const WSL_START_COMMAND = "wsl --shell-type login";
 
 export function executeCommand(command: string, rootPassword = "") {
     if (rootPassword) {
-        var command = 'echo ' + rootPassword + ' | sudo -S ' + command;
+        if (OS_NAME === "linux") {
+            var command = 'echo ' + rootPassword + ' | sudo -S ' + command;
+        } else {
+            var command = "-u root " + command;
+        }
     } else {
         var command = command;
     }
@@ -64,7 +68,7 @@ export function executeCommandCallbackOnLog(command: string, onLog: (log: string
         if (killOnError) {
             output.kill();
         }
-        });
+    });
 
     output.on('exit', () => { onExit(); console.log("finished"); });
 }

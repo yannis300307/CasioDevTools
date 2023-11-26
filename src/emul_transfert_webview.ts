@@ -59,7 +59,15 @@ export class EmulTransViewProvider implements vscode.WebviewViewProvider {
 						if (data.compile) {
 							if (IS_FXSDK_INSTALLED) {
 								logLongLoading("Compiling for CG", "compile_cg");
-								compileCG((log) => { setLoadingLastLog("compile_cg", log); }, () => { logMessage("The sources has been built successfully!"); setLoadingState("compile_cg", false); runEmulator(); });
+								compileCG((log) => {
+									setLoadingLastLog("compile_cg", log);
+								}, () => {
+									logMessage("The sources has been built successfully!");
+									setLoadingState("compile_cg", false);
+									runEmulator();
+								}, (error: any) => {
+									logWarn("An error occured durring the building of the Add-in: " + error.message);
+								});
 							} else {
 								logWarn("FxSDK needs to be installed to compile!");
 							}
@@ -73,7 +81,15 @@ export class EmulTransViewProvider implements vscode.WebviewViewProvider {
 						if (data.compile) {
 							if (IS_FXSDK_INSTALLED) {
 								logLongLoading("Compiling for CG", "compile_cg");
-								compileCG((log) => { setLoadingLastLog("compile_cg", log); }, () => { logMessage("The sources has been built successfully!"); setLoadingState("compile_cg", false); transfertCopy(data.eject); });
+								compileCG((log) => {
+									setLoadingLastLog("compile_cg", log);
+								}, () => {
+									logMessage("The sources has been built successfully!");
+									setLoadingState("compile_cg", false);
+									transfertCopy(data.eject);
+								}, (error: any) => {
+									logWarn("An error occured durring the building of the Add-in: " + error.message);
+								});
 							} else {
 								logWarn("FxSDK needs to be installed to compile!");
 							}
