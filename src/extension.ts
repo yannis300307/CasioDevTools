@@ -144,11 +144,11 @@ function checkEnvironment(extensionUri: vscode.Uri) {
 			.showInformationMessage("Fxsdk is not installed on your system. Do you want to install it automaticaly?", "Yes", "No")
 			.then(answer => { IS_FXSDK_INSTALLED = startFxsdkInstallation(answer); });
 	}
-	if (!IS_CCPP_EXTENSION_INSTALLED) {
+	/**if (!IS_CCPP_EXTENSION_INSTALLED) {
 		vscode.window
 			.showInformationMessage("C/C++ Extension is not installed on your system. Do you want to install it automaticaly?", "Yes", "No")
 			.then(answer => { if (answer === "Yes") { installCCPPExtension(); } });
-	}
+	}**/
 
 	console.log("CasioDevTools successfully started !");
 }

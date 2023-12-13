@@ -27,8 +27,6 @@
         "command": "casiodev.reloadtransfertemulwebview",
         "title": "CasioDevTools: Reload the transfer/emul Webview"
       },
-
-
       {
         "command": "casiodev.startemulator",
         "title": "CasioDevTools: Start Emulator"
@@ -41,13 +39,10 @@
         "command": "casiodev.compilefx",
         "title": "CasioDevTools: Compile the Add-in for monochrome calculators"
       },
-
       {
         "command": "casiodev.newproject",
         "title": "CasioDevTools: Create a new CDT project"
       },
-
-      
       {
         "command": "casiodev.transfer",
         "title": "CasioDevTools: Transfer the add-in to the calculator with copy"
@@ -68,7 +63,6 @@
         "command": "casiodev.transferpush",
         "title": "CasioDevTools: Transfer the add-in to the calculator with Add_in Push"
       }
-
     ],
     "viewsContainers": {
       "activitybar": [
@@ -122,5 +116,8 @@
   "dependencies": {
     "eject-media": "^0.0.3",
     "systeminformation": "^5.21.17"
-  }
+  },
+  "extensionDependencies": [
+    "ms-vscode.cpptools"
+  ]
 }
