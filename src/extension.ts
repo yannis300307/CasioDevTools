@@ -7,6 +7,9 @@ import { logWarn } from './utils';
 import { FxsdkViewProvider } from './fxsdk_webview';
 import { initCasioDevFolder, installCCPPExtension, startFxsdkInstallation, startGiteapcInstallation, updateHeadersFilesWithLog } from './setup_dependencies';
 import { EmulTransViewProvider } from './emul_transfert_webview';
+import { pushTransfert, runEmulator } from './emul_transfert_manager';
+import { compileCgLoading, compileFxLoading, createProjectInterface } from './fxsdk_actions';
+import { compileTransferEject } from './emul_transfer_actions';
 
 export var OS_NAME: string;
 export var IS_WSL_INSTALLED: boolean;
@@ -23,7 +26,49 @@ export var INSTALLING_GITEAPC = false;
 
 export function activate(context: vscode.ExtensionContext) {
 	setupViews(context);
+	setupCommands();
 	checkEnvironment(context.extensionUri);
+}
+
+function setupCommands() {
+	
+	vscode.commands.registerCommand("casiodev.startemulator", () => {
+		runEmulator();
+	});
+
+	vscode.commands.registerCommand("casiodev.compilecg", () => {
+		compileCgLoading();
+	});
+
+	vscode.commands.registerCommand("casiodev.compilefx", () => {
+		compileFxLoading();
+	});
+
+	vscode.commands.registerCommand("casiodev.newproject", () => {
+		createProjectInterface();
+	});
+
+	vscode.commands.registerCommand("casiodev.transfer", () => {
+		compileTransferEject(false, false);
+	});
+
+	vscode.commands.registerCommand("casiodev.compiletransfer", () => {
+		compileTransferEject(true, false);
+	});
+
+	vscode.commands.registerCommand("casiodev.compiletransfereject", () => {
+		compileTransferEject(true, true);
+	});
+
+	vscode.commands.registerCommand("casiodev.transfereject", () => {
+		compileTransferEject(false, true);
+	});
+
+	vscode.commands.registerCommand("casiodev.transferpush", () => {
+		pushTransfert();
+	});
+
+
 }
 
 function setupViews(context: vscode.ExtensionContext) {

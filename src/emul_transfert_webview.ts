@@ -1,9 +1,9 @@
 import { readFileSync } from 'fs';
 import * as vscode from 'vscode';
-import { logLongLoading, logMessage, logWarn, setLoadingLastLog, setLoadingState } from './utils';
-import { compileCG, setupCDTInCurrentFolder } from './fxsdk_manager';
-import { IS_CDT_PROJECT, IS_FXSDK_INSTALLED, OS_NAME } from './extension';
-import { pushTransfert, runEmulator, transfertCopy, transfertPushAddin } from './emul_transfert_manager';
+import { setupCDTInCurrentFolder } from './fxsdk_manager';
+import { IS_CDT_PROJECT, OS_NAME } from './extension';
+import { pushTransfert, transfertPushAddin } from './emul_transfert_manager';
+import { compileRunEmulator, compileTransferEject } from './emul_transfer_actions';
 
 
 
@@ -56,47 +56,12 @@ export class EmulTransViewProvider implements vscode.WebviewViewProvider {
 					}
 				case 'start_emulator':
 					{
-						if (data.compile) {
-							if (IS_FXSDK_INSTALLED) {
-								logLongLoading("Compiling for CG", "compile_cg");
-								compileCG((log) => {
-									setLoadingLastLog("compile_cg", log);
-								}, () => {
-									logMessage("The sources has been built successfully!");
-									setLoadingState("compile_cg", false);
-									runEmulator();
-								}, (error: any) => {
-									logWarn("An error occured durring the building of the Add-in: " + error.message);
-								});
-							} else {
-								logWarn("FxSDK needs to be installed to compile!");
-							}
-						} else {
-							runEmulator();
-						}
+						compileRunEmulator(data.compile);
 						break;
 					}
 				case 'transfert_copy':
 					{
-						if (data.compile) {
-							if (IS_FXSDK_INSTALLED) {
-								logLongLoading("Compiling for CG", "compile_cg");
-								compileCG((log) => {
-									setLoadingLastLog("compile_cg", log);
-								}, () => {
-									logMessage("The sources has been built successfully!");
-									setLoadingState("compile_cg", false);
-									transfertCopy(data.eject);
-								}, (error: any) => {
-									logWarn("An error occured durring the building of the Add-in: " + error.message);
-								});
-							} else {
-								logWarn("FxSDK needs to be installed to compile!");
-							}
-						} else {
-							transfertCopy(data.eject);
-						}
-
+						compileTransferEject(data.compile, data.eject);
 						break;
 					}
 				case 'transfert_push':

@@ -90,7 +90,7 @@ export class GiteaPCViewProvider implements vscode.WebviewViewProvider {
 		});
 
 	}
-	private async updateLibsList(libName: string) {
+	public async updateLibsList(libName: string) {
 		var newValues = await giteapcGetLibsList(libName);
 		this._view?.webview.postMessage({ type: 'update_lib_list', data: newValues });
 	}
